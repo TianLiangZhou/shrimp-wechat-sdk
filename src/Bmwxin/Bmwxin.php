@@ -1,6 +1,10 @@
 <?php
 
 namespace Bmwxin;
+use Interop\Container\ContainerInterface;
+use SimpleXMLElement;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 /**
  * Class Bmwxin
  * @package Bmwxin
@@ -48,28 +52,50 @@ class Bmwxin
         'material' => 'material/add_news',
         'file' => 'media/upload'
     ];
+
+    protected $dispatcher = null;
     /**
      * Bmwxin constructor.
      * @param $gateway
      * @param $appId
      * @param $secret
      */
-    public function __construct($gateway, $appId, $secret)
+    public function __construct($appId, $secret, ContainerInterface $container = null)
     {
-        $this->gateway = $gateway;
         $this->appId = $appId;
         $this->secret = $secret;
+        if ($container) {
+            $dispatcher = $container->get('dispatcher');
+            if ($dispatcher && ($dispatcher instanceof EventDispatcher)) {
+                $this->dispatcher = $dispatcher;
+            }
+        }
+        if ($this->dispatcher === null) {
+            $this->dispatcher = new EventDispatcher();
+        }
     }
 
-    public function receiveMessage()
+    /**
+     * @param SimpleXMLElement $XMLElement
+     * @return bool
+     */
+    public function receiveMessage(SimpleXMLElement $XMLElement)
     {
-
+        if (!isset($XMLElement->MsgType)) {
+            throw new \InvalidArgumentException('not weixin message!');
+        }
+        $msgType = $XMLElement->MsgType;
+        switch($msgType) {
+            case 'text':
+            case 'image':
+            case 'voice':
+            case 'video':
+            case 'shortvideo':
+            case 'location':
+        }
+        return true;
     }
 
-    public function replyMessage($type, $message)
-    {
-
-    }
     public function getAccessToken($callback = null)
     {
         if ($callback && !is_callable($callback)) {
@@ -83,9 +109,26 @@ class Bmwxin
         $this->http('GET', $args);
     }
 
-    protected function verifyWeixinRequest()
+    protected function defaultEventListener()
     {
 
+    }
+    /**
+     * 验证WEIXIN请求
+     * @param $token
+     * @param array $query
+     * @return bool
+     */
+    protected function verifyWeixinRequest($token, array $query)
+    {
+        if (empty($token) || empty($query))
+        $weiXin = [$token, $query['timestamp'], $query['nonce']];
+        sort($weiXin, SORT_STRING);
+        $sign = sha1(implode($weiXin, ''));
+        if ($sign == $query['signature']) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -120,6 +163,4 @@ class Bmwxin
         curl_close($curl);
         return $response;
     }
-
-
 }
