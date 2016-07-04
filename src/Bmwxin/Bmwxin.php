@@ -122,9 +122,11 @@ class Bmwxin
      * @param array $query
      * @return bool
      */
-    protected function verifyWeixinRequest($token, array $query)
+    public function verifyWeixinRequest($token, array $query)
     {
-        if (empty($token) || empty($query))
+        if (empty($token) || empty($query)) {
+            return false;
+        }
         $weiXin = [$token, $query['timestamp'], $query['nonce']];
         sort($weiXin, SORT_STRING);
         $sign = sha1(implode($weiXin, ''));
