@@ -12,9 +12,7 @@
     	}
     ],
     "require": {
-        "php": ">=5.5.0",
-        "symfony/event-dispatcher": "~3.0",
-        "container-interop/container-interop": "~1.1"
+        "php": ">=5.5.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.5",
@@ -22,7 +20,7 @@
     },
     "autoload": {
     	"psr-0": {
-    		"LightCache": "src/"
+    		"Bmwxin": "src/"
     	}
     }
 }

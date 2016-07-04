@@ -1,9 +1,7 @@
 <?php
 
 namespace Bmwxin;
-use Interop\Container\ContainerInterface;
 use SimpleXMLElement;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class Bmwxin
@@ -32,8 +30,7 @@ class Bmwxin
     /**
      * @var string
      */
-    protected $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' .
-    '(KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36';
+    protected $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36';
 
     /**
      * @var array
@@ -52,50 +49,53 @@ class Bmwxin
         'material' => 'material/add_news',
         'file' => 'media/upload'
     ];
-
-    protected $dispatcher = null;
+    
     /**
      * Bmwxin constructor.
      * @param $gateway
      * @param $appId
      * @param $secret
      */
-    public function __construct($appId, $secret, ContainerInterface $container = null)
+    public function __construct($appId, $secret)
     {
         $this->appId = $appId;
         $this->secret = $secret;
-        if ($container) {
-            $dispatcher = $container->get('dispatcher');
-            if ($dispatcher && ($dispatcher instanceof EventDispatcher)) {
-                $this->dispatcher = $dispatcher;
-            }
-        }
-        if ($this->dispatcher === null) {
-            $this->dispatcher = new EventDispatcher();
-        }
     }
 
     /**
      * @param SimpleXMLElement $XMLElement
-     * @return bool
+     * @param $callback
      */
-    public function receiveMessage(SimpleXMLElement $XMLElement)
+    public function registerReceiveMessage(SimpleXMLElement $XMLElement, $callback)
     {
         if (!isset($XMLElement->MsgType)) {
             throw new \InvalidArgumentException('not weixin message!');
         }
-        $msgType = $XMLElement->MsgType;
-        switch($msgType) {
-            case 'text':
-            case 'image':
-            case 'voice':
-            case 'video':
-            case 'shortvideo':
-            case 'location':
+        if ($callback instanceof AbstractReceive) {
+            switch ($XMLElement->MsgType) {
+                case 'text':
+                    return $callback->text($XMLElement);
+                case 'image':
+                    return $callback->image($XMLElement);
+                case 'voice':
+                    return $callback->voice($XMLElement);
+                case 'shortvideo':
+                    return $callback->shortVideo($XMLElement);
+                case 'location':
+                    return $callback->location($XMLElement);
+            }
         }
-        return true;
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException('$callback must be Closure or implements __invoke method');
+        }
+        return call_user_func($callback, $XMLElement);
     }
 
+    /**
+     * @param null $callback
+     * @return mixed|string
+     * @throws \HttpRequestException
+     */
     public function getAccessToken($callback = null)
     {
         if ($callback && !is_callable($callback)) {
@@ -106,13 +106,16 @@ class Bmwxin
             'appid' => $this->appId,
             'secret' => $this->secret,
         ];
-        $this->http('GET', $args);
+        $response = $this->http('token', 'GET', $args);
+        if (empty($response['access_token'])) {
+            return '';
+        }
+        if ($callback) {
+            $response = call_user_func($callback, $response);
+        }
+        return $response;
     }
 
-    protected function defaultEventListener()
-    {
-
-    }
     /**
      * 验证WEIXIN请求
      * @param $token
@@ -132,11 +135,12 @@ class Bmwxin
     }
 
     /**
-     * @param string $method
-     * @param array $postData
+     * @param string $name 接口名
+     * @param string $method 请求方式
+     * @param array $postData 请求数据
      * @return mixed
      */
-    protected function http($method = "GET", array $postData = [])
+    protected function http($name, $method = "GET", array $postData = [])
     {
         $curl = curl_init();
         $options = [
@@ -149,7 +153,10 @@ class Bmwxin
             CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
             CURLOPT_SSL_VERIFYPEER => false,        //
         ];
-        $url = $this->gateway;
+        $url = $this->gateway . (isset($this->interface[$name]) 
+                ? $this->gateway . $this->interface[$name]
+                : ''
+            );
         if (strtoupper($method) === 'GET' && $postData) {
             $url .= '?' . http_build_query($postData);
         }
@@ -160,7 +167,10 @@ class Bmwxin
         $options[CURLOPT_URL] = $url;
         curl_setopt_array($curl, $options);
         $response = curl_exec($curl);
+        if (curl_errno($curl)) {
+            throw new \HttpRequestException(curl_error($curl));
+        }
         curl_close($curl);
-        return $response;
+        return json_decode($response, true);
     }
 }
