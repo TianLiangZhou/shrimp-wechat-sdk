@@ -1,5 +1,5 @@
 <?php
-header("Content-Type:text/xml");
+header("Content-MessageType:text/xml");
 include dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
 $bmwxin = new \Bmwxin\Bmwxin('appId', 'secret');
