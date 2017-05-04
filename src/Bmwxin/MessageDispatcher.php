@@ -18,22 +18,35 @@ class MessageDispatcher
 
     private $subscribers = [];
 
+    /**
+     * MessageDispatcher constructor.
+     * @param \SimpleXMLElement $package
+     */
     public function __construct(\SimpleXMLElement $package)
     {
         $this->package = $package;
     }
 
+    /**
+     * @param null $response
+     * @return \Bmwxin\Response|null
+     */
     public function dispatch($response = null)
     {
         if (null == $response) {
             $response = new Response();
         }
-        if (($subscribers = $this->getSubscriber($this->package->MsgType))) {
+        $messageType = (string) $this->package->MsgType;
+        if (($subscribers = $this->getSubscriber($messageType))) {
             $this->doDispatch($subscribers, $response);
         }
         return $response;
     }
 
+    /**
+     * @param $subscribers
+     * @param \Bmwxin\Response $response
+     */
     private function doDispatch($subscribers, Response $response)
     {
         foreach ($subscribers as $callback) {
@@ -41,6 +54,10 @@ class MessageDispatcher
         }
     }
 
+    /**
+     * @param $type
+     * @return array|mixed
+     */
     public function getSubscriber($type)
     {
         if (!isset($this->subscribers[$type])) {

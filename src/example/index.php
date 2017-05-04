@@ -2,7 +2,6 @@
 header("Content-MessageType:text/xml");
 include dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
-$bmwxin = new \Bmwxin\Bmwxin('appId', 'secret');
 
 $string = <<<END
 <xml>
@@ -15,40 +14,24 @@ $string = <<<END
  </xml>
 END;
 
-class Reply extends \Bmwxin\AbstractReceive
+class TextSubscriber implements \Bmwxin\Message\MessageSubscriberInterface
 {
-    public function text($xml)
+    public function onMessageText(\Bmwxin\Response $response, $package)
     {
-        //TODO
-        return $this->formatMessage('text', [
-            'toUser' => $xml->ToUserName,
-            'fromUser' => $xml->FromUserName,
-            'content' => 'Ok'
-        ]);
+        $textResponse = new \Bmwxin\Response\TextResponse($package);
+        $textResponse->setContent("aaaa");
+        $response->setContent($textResponse);
+    }
 
-    }
-    
-    public function image($xml)
+    public function getSubscriberType()
     {
-        //TODO
-    }
-    
-    public function voice($xml)
-    {
-        //TODO    
-    }
-    
-    public function shortVideo($xml)
-    {   
-        //TODO
-    }
-    
-    public function location($xml)
-    {
-        //TODO
+        // TODO: Implement getSubscriberType() method.
+        return [
+            \Bmwxin\Message\MessageType::TEXT => ['onMessageText', 100]
+        ];
     }
 }
 
-$xml = new SimpleXMLElement($string);
-
-echo $bmwxin->registerReceiveMessage($xml, new Reply());
+$message = new \Bmwxin\MessageDispatcher(new SimpleXMLElement($string));
+$message->addSubscribers(new TextSubscriber());
+echo $message->dispatch();

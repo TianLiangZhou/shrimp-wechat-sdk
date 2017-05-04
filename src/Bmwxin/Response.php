@@ -9,11 +9,13 @@
 namespace Bmwxin;
 
 
+use Bmwxin\Response\ResponseInterface;
+
 class Response
 {
     private $content = null;
 
-    public function setContent($content)
+    public function setContent(ResponseInterface $content)
     {
         $this->content = $content;
     }
@@ -22,9 +24,8 @@ class Response
     {
         // TODO: Implement __toString() method.
         if ($this->content) {
-            echo $this->content;
-        } else {
-            echo 'success';
+            return (string) $this->content;
         }
+        return 'success';
     }
 }
