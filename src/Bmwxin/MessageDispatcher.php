@@ -9,8 +9,17 @@
 namespace Bmwxin;
 
 
-use Bmwxin\Response;
-use Bmwxin\Message\MessageSubscriberInterface;
+use Bmwxin\Response\Response;
+use Bmwxin\Response\ResponsePluginInterface;
+use Bmwxin\Subscriber\SubscriberInterface;
+use Bmwxin\Subscriber\EventSubscriber;
+use Bmwxin\Subscriber\ImageSubscriber;
+use Bmwxin\Subscriber\LinkSubscriber;
+use Bmwxin\Subscriber\LocationSubscriber;
+use Bmwxin\Subscriber\ShortVideoSubscriber;
+use Bmwxin\Subscriber\TextSubscriber;
+use Bmwxin\Subscriber\VideoSubscriber;
+use Bmwxin\Subscriber\VoiceSubscriber;
 
 class MessageDispatcher
 {
@@ -18,6 +27,18 @@ class MessageDispatcher
 
     private $subscribers = [];
 
+    private $defaultSubscribers = [
+        TextSubscriber::class,
+        ImageSubscriber::class,
+        LinkSubscriber::class,
+        LocationSubscriber::class,
+        ShortVideoSubscriber::class,
+        VoiceSubscriber::class,
+        VideoSubscriber::class,
+        EventSubscriber::class
+    ];
+
+    private $plugins = [];
     /**
      * MessageDispatcher constructor.
      * @param \SimpleXMLElement $package
@@ -25,11 +46,14 @@ class MessageDispatcher
     public function __construct(\SimpleXMLElement $package)
     {
         $this->package = $package;
+        foreach ($this->defaultSubscribers as $class) {
+            $this->addSubscribers(new $class);
+        }
     }
 
     /**
      * @param null $response
-     * @return \Bmwxin\Response|null
+     * @return Response|null
      */
     public function dispatch($response = null)
     {
@@ -50,15 +74,26 @@ class MessageDispatcher
     private function doDispatch($subscribers, Response $response)
     {
         foreach ($subscribers as $callback) {
-            call_user_func($callback, $response, $this->package);
+            call_user_func($callback, $response, $this->package, $this->plugins);
         }
     }
 
+    public function addPlugins(array $plugins)
+    {
+        foreach ($plugins as $plugin) {
+            $this->plugins[] = $plugin;
+        }
+    }
+
+    public function addPlugin(ResponsePluginInterface $plugin)
+    {
+        $this->plugins[] = $plugin;
+    }
     /**
      * @param $type
      * @return array|mixed
      */
-    public function getSubscriber($type)
+    private function getSubscriber($type)
     {
         if (!isset($this->subscribers[$type])) {
             return [];
@@ -77,9 +112,9 @@ class MessageDispatcher
     }
 
     /**
-     * @param MessageSubscriberInterface $subscriber
+     * @param SubscriberInterface $subscriber
      */
-    public function addSubscribers(MessageSubscriberInterface $subscriber)
+    private function addSubscribers(SubscriberInterface $subscriber)
     {
         foreach ($subscriber->getSubscriberType() as $messageType => $callback) {
             if (is_string($callback)) {

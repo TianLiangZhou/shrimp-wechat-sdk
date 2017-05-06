@@ -14,8 +14,12 @@ abstract class AbstractResponse
     protected $package = null;
 
     protected $content = null;
+
+    protected $requestTime = null;
     public function __construct($package)
     {
         $this->package = $package;
+
+        $this->requestTime = $_SERVER['REQUEST_TIME'];
     }
 }

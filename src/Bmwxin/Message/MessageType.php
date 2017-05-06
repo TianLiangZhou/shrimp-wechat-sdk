@@ -16,9 +16,17 @@ class MessageType
     const VOICE = 'voice';
     const VIDEO = 'video';
     const MUSIC = 'music';
-    const EVENT = 'event';
     const LINK  = 'link';
     const NEWS  = 'news';
-    const LOCATION = 'location';
     const SHORTVIDEO = 'shortvideo';
+    const EVENT = 'event';
+
+    const LOCATION = 'location'; //可以是事件类型，也可以是消息类型
+    /**
+     * 事件类型
+     */
+    const SUBSCRIBE = 'subscribe';
+    const SCAN = 'scan';
+    const CLICK = 'click';
+    const VIEW  = 'view';
 }

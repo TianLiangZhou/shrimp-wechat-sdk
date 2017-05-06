@@ -6,10 +6,7 @@
  * Time: 23:44
  */
 
-namespace Bmwxin;
-
-
-use Bmwxin\Response\ResponseInterface;
+namespace Bmwxin\Response;
 
 class Response
 {
