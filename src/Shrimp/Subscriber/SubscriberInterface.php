@@ -6,10 +6,10 @@
  * Time: 22:00
  */
 
-namespace Bmwxin\Subscriber;
+namespace Shrimp\Subscriber;
 
 
-use Bmwxin\Response\Response;
+use Shrimp\Response\Response;
 
 interface SubscriberInterface
 {

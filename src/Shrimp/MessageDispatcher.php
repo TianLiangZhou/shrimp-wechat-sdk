@@ -6,20 +6,20 @@
  * Time: 21:48
  */
 
-namespace Bmwxin;
+namespace Shrimp;
 
 
-use Bmwxin\Response\Response;
-use Bmwxin\Response\ResponsePluginInterface;
-use Bmwxin\Subscriber\SubscriberInterface;
-use Bmwxin\Subscriber\EventSubscriber;
-use Bmwxin\Subscriber\ImageSubscriber;
-use Bmwxin\Subscriber\LinkSubscriber;
-use Bmwxin\Subscriber\LocationSubscriber;
-use Bmwxin\Subscriber\ShortVideoSubscriber;
-use Bmwxin\Subscriber\TextSubscriber;
-use Bmwxin\Subscriber\VideoSubscriber;
-use Bmwxin\Subscriber\VoiceSubscriber;
+use Shrimp\Response\Response;
+use Shrimp\Response\ResponsePluginInterface;
+use Shrimp\Subscriber\SubscriberInterface;
+use Shrimp\Subscriber\EventSubscriber;
+use Shrimp\Subscriber\ImageSubscriber;
+use Shrimp\Subscriber\LinkSubscriber;
+use Shrimp\Subscriber\LocationSubscriber;
+use Shrimp\Subscriber\ShortVideoSubscriber;
+use Shrimp\Subscriber\TextSubscriber;
+use Shrimp\Subscriber\VideoSubscriber;
+use Shrimp\Subscriber\VoiceSubscriber;
 
 class MessageDispatcher
 {

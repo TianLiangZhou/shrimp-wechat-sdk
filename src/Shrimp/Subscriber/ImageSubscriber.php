@@ -3,19 +3,19 @@
  * Created by PhpStorm.
  * User: zhoutianliang
  * Date: 2017/5/6
- * Time: 12:40
+ * Time: 12:37
  */
 
-namespace Bmwxin\Subscriber;
+namespace Shrimp\Subscriber;
 
 
-use Bmwxin\Message\MessageType;
+use Shrimp\Message\MessageType;
 
-class LinkSubscriber extends AbstractSubscriber
+class ImageSubscriber extends AbstractSubscriber
 {
     public function type()
     {
         // TODO: Implement type() method.
-        return MessageType::LINK;
+        return MessageType::IMAGE;
     }
 }

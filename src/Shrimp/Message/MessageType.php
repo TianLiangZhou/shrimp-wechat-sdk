@@ -6,7 +6,7 @@
  * Time: 22:16
  */
 
-namespace Bmwxin\Message;
+namespace Shrimp\Message;
 
 
 class MessageType

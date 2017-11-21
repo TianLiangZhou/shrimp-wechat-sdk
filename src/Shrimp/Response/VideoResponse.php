@@ -6,7 +6,7 @@
  * Time: 11:28
  */
 
-namespace Bmwxin\Response;
+namespace Shrimp\Response;
 
 
 class VideoResponse extends AbstractResponse implements ResponseInterface

@@ -3,19 +3,19 @@
  * Created by PhpStorm.
  * User: zhoutianliang
  * Date: 2017/5/6
- * Time: 12:39
+ * Time: 12:36
  */
 
-namespace Bmwxin\Subscriber;
+namespace Shrimp\Subscriber;
 
 
-use Bmwxin\Message\MessageType;
+use Shrimp\Message\MessageType;
 
-class LocationSubscriber extends AbstractSubscriber
+class TextSubscriber extends AbstractSubscriber
 {
     public function type()
     {
         // TODO: Implement type() method.
-        return MessageType::LOCATION;
+        return MessageType::TEXT;
     }
 }

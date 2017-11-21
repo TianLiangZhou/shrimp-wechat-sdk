@@ -8,7 +8,7 @@
 include dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
 
-$sdk  = new \Bmwxin\MpSDK( 'wx983dd48be764e9ce',
+$sdk  = new \Shrimp\MpSDK( 'wx983dd48be764e9ce',
         '26b8ccf343bddeecd0402e1b864d2dd4');
 
 try {

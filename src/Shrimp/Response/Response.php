@@ -6,7 +6,7 @@
  * Time: 23:44
  */
 
-namespace Bmwxin\Response;
+namespace Shrimp\Response;
 
 class Response
 {

@@ -6,10 +6,10 @@
  * Time: 12:39
  */
 
-namespace Bmwxin\Subscriber;
+namespace Shrimp\Subscriber;
 
 
-use Bmwxin\Message\MessageType;
+use Shrimp\Message\MessageType;
 
 class ShortVideoSubscriber extends AbstractSubscriber
 {

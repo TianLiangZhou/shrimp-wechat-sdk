@@ -1,14 +1,14 @@
 {
-	"name": "bmwxin/bmwxin",
+	"name": "shrimp-wechat-sdk/shrimp-wechat-sdk",
 	"type": "library",
-    "description": "weixin public platform SDK",
-    "keywords": ["weixin", "SDK"],
+    "description": "小虾米微信公众平台SDK库",
+    "keywords": ["weixin", "SDK", "wechat", "wechat sdk", "weixin sdk"],
     "license": "MIT",
     "authors": [
     	{
     		"name": "Tianliang Zhou",
     		"email": "mfkgdyve@gmail.com",
-    		"homepage": "http://www.zhoutl.net"
+    		"homepage": "http://www.loocode.com"
     	}
     ],
     "require": {
@@ -21,7 +21,7 @@
     },
     "autoload": {
     	"psr-0": {
-    		"Bmwxin": "src/"
+    		"Shrimp": "src/"
     	}
     }
 }

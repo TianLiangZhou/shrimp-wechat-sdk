@@ -2,16 +2,15 @@
 /**
  * Created by PhpStorm.
  * User: zhoutianliang
- * Date: 2017/5/6
- * Time: 11:25
+ * Date: 2017/5/4
+ * Time: 8:39
  */
 
-namespace Bmwxin\Response;
+namespace Shrimp\Response;
 
 
-class VoiceResponse extends AbstractResponse implements ResponseInterface
+class TextResponse extends AbstractResponse implements ResponseInterface
 {
-
     public function setContent($content)
     {
         // TODO: Implement setContent() method.
@@ -24,15 +23,12 @@ class VoiceResponse extends AbstractResponse implements ResponseInterface
         // TODO: Implement __toString() method.
         return <<<EOF
 <xml>
-    <ToUserName><![CDATA[{$this->FromUserName}]]></ToUserName>
-    <FromUserName><![CDATA[{$this->ToUserName}]]></FromUserName>
+    <ToUserName><![CDATA[{$this->package->FromUserName}]]></ToUserName>
+    <FromUserName><![CDATA[{$this->package->ToUserName}]]></FromUserName>
     <CreateTime>{$this->requestTime}</CreateTime>
-    <MsgType><![CDATA[voice]]></MsgType>
-    <Voice>
-    <MediaId><![CDATA[{$this->content}]]></MediaId>
-    </Voice>
+    <MsgType><![CDATA[text]]></MsgType>
+    <Content><![CDATA[{$this->content}]]></Content>
 </xml>
 EOF;
-
     }
 }

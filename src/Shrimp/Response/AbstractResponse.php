@@ -6,7 +6,7 @@
  * Time: 9:12
  */
 
-namespace Bmwxin\Response;
+namespace Shrimp\Response;
 
 
 abstract class AbstractResponse

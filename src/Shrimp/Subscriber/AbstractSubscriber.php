@@ -6,11 +6,11 @@
  * Time: 12:47
  */
 
-namespace Bmwxin\Subscriber;
+namespace Shrimp\Subscriber;
 
 
-use Bmwxin\Response\Response;
-use Bmwxin\Response\ResponsePluginInterface;
+use Shrimp\Response\Response;
+use Shrimp\Response\ResponsePluginInterface;
 
 abstract class AbstractSubscriber implements SubscriberInterface
 {

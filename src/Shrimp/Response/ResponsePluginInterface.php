@@ -6,7 +6,7 @@
  * Time: 13:28
  */
 
-namespace Bmwxin\Response;
+namespace Shrimp\Response;
 
 
 interface ResponsePluginInterface

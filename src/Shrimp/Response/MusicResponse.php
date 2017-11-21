@@ -6,7 +6,7 @@
  * Time: 11:35
  */
 
-namespace Bmwxin\Response;
+namespace Shrimp\Response;
 
 
 class MusicResponse extends AbstractResponse implements ResponseInterface
