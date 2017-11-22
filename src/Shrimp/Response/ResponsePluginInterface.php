@@ -11,7 +11,11 @@ namespace Shrimp\Response;
 
 interface ResponsePluginInterface
 {
-    public function getResponse($package): ResponseInterface;
-    public function type(): string;
-    public function name(): string;
+    /**
+     * @param $package
+     * @return ResponseInterface
+     */
+    public function getResponse($package);
+    public function type();
+    public function name();
 }

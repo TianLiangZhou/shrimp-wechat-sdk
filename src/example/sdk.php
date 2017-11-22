@@ -8,19 +8,12 @@
 include dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
 
-$sdk  = new \Shrimp\MpSDK( 'wx983dd48be764e9ce',
+$sdk  = \Shrimp\MpSDK::getInstance( 'wx983dd48be764e9ce',
         '26b8ccf343bddeecd0402e1b864d2dd4');
-
-try {
-    $sdk->requestAccessToken();
-}catch (Exception $e) {
-
-}
-echo $sdk->createMenu([
+print_r($sdk->createMenu([
 
           "type" => "click",
-          "name" => "测试",
-          "key"  => "V1001_TODAY_MUSIC"
+          "name" => "测试三",
+          "key"  => "V1001_TODAY_VIEW"
 
-]);
-print_r($sdk->menuQuery());
+]));

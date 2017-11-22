@@ -14,51 +14,51 @@ $string = <<<END
  </xml>
 END;
 
-class TextPlugin implements \Bmwxin\Response\ResponsePluginInterface
+class TextPlugin implements \Shrimp\Response\ResponsePluginInterface
 {
 
-    public function getResponse($package): \Bmwxin\Response\ResponseInterface
+    public function getResponse($package)
     {
         // TODO: Implement getResponse() method.
-        return (new \Bmwxin\Response\TextResponse($package))->setContent("Hello world");
+        return (new \Shrimp\Response\TextResponse($package))->setContent("Hello world");
     }
 
-    public function type(): string
+    public function type()
     {
         // TODO: Implement type() method.
-        return \Bmwxin\Message\MessageType::TEXT;
+        return \Shrimp\Message\MessageType::TEXT;
     }
 
-    public function name(): string
+    public function name()
     {
         // TODO: Implement name() method.
         return "";
     }
 }
-class EventSubPlugin implements \Bmwxin\Response\ResponsePluginInterface
+class EventSubPlugin implements \Shrimp\Response\ResponsePluginInterface
 {
 
-    public function getResponse($package): \Bmwxin\Response\ResponseInterface
+    public function getResponse($package)
     {
         // TODO: Implement getResponse() method.
-        return (new \Bmwxin\Response\TextResponse($package))->setContent("Hello world");
+        return (new \Shrimp\Response\TextResponse($package))->setContent("谢谢你的关注");
     }
 
-    public function type(): string
+    public function type()
     {
         // TODO: Implement type() method.
-        return \Bmwxin\Message\MessageType::EVENT;
+        return \Shrimp\Message\MessageType::EVENT;
     }
 
-    public function name(): string
+    public function name()
     {
         // TODO: Implement name() method.
-        return \Bmwxin\Message\MessageType::SUBSCRIBE;
+        return \Shrimp\Message\MessageType::SUBSCRIBE;
     }
 }
 
 
-$message = new \Bmwxin\MessageDispatcher(new SimpleXMLElement($string));
+$message = new \Shrimp\MessageDispatcher(new SimpleXMLElement($string));
 
 $message->addPlugin(new TextPlugin());
 $message->addPlugin(new EventSubPlugin());

@@ -9,7 +9,18 @@
 namespace Shrimp;
 
 use Exception;
+use ReflectionClass;
+use Shrimp\Api\Material;
+use Shrimp\Api\Menu;
+use Shrimp\Api\User;
 
+/**
+ * @property Material $material
+ * @property Menu $menu
+ * @property User $user
+ * Class MpSDK
+ * @package Shrimp
+ */
 class MpSDK
 {
     /**
@@ -38,46 +49,39 @@ class MpSDK
 
     private $accessToken = null;
 
-
-    const MEDIA_IMAGE = 'image';
-
-    const MEDIA_VOICE = 'voice';
-
-    const MEDIA_VIDEO = 'video';
-
-    const MEDIA_THUMB = 'thumb';
-
-    const MEDIA_NEWS  = 'news';
-
-    const FILE_MEDIA_TYPE = [
-        self::MEDIA_IMAGE, self::MEDIA_VOICE, self::MEDIA_VIDEO, self::MEDIA_THUMB, self::MEDIA_NEWS
-    ];
+    /**
+     * @var array
+     */
+    private $modules = [];
 
     /**
-     * 
+     * @var null
      */
-    private $mediaTypeExt = [
-        self::MEDIA_IMAGE => ['bmp', 'png', 'jpeg', 'jpg', 'gif'],
-        self::MEDIA_VOICE => ['mp3', 'wma', 'wav', 'amr'],
-        self::MEDIA_VIDEO => ['mp4'],
-        self::MEDIA_THUMB => ['jpg'],
-    ];
+    private static $instance = null;
 
     /**
-     * 
+     * MpSDK constructor.
+     * @param $appId
+     * @param $secret
      */
-    private $mediaFileSize = [
-        self::MEDIA_IMAGE => 2 * 1048576,
-        self::MEDIA_VOICE => 2 * 1048576,
-        self::MEDIA_VIDEO => 10 * 1048576,
-        self::MEDIA_THUMB => 64 * 1024,
-    ];
-
-    public function __construct($appId, $secret)
+    private function __construct($appId, $secret)
     {
         $this->appId = $appId;
-
         $this->secret = $secret;
+        $this->requestAccessToken();
+    }
+
+    /**
+     * @param $appId
+     * @param $secret
+     * @return null|static
+     */
+    public static function getInstance($appId = null, $secret = null)
+    {
+        if (self::$instance === null) {
+            self::$instance = new self($appId, $secret);
+        }
+        return self::$instance;
     }
     /**
      * 验证微信请求
@@ -134,311 +138,15 @@ class MpSDK
     }
 
 
-    /**
-     * @param array $data
-     * @return bool
-     * @throws \Exception
-     */
-    public function createMenu(array $data)
-    {
-        if (empty($this->accessToken)) {
-            throw new \Exception('AccessToken is empty');
-        }
-        $requestData = [];
-        if (isset($data[0])) {
-            $requestData['button'] = $data;
-        } else {
-            $requestData['button'][] = $data;
-        }
-        $uri = $this->gateway . 'menu/create?access_token=' . $this->accessToken;
-        try {
-            $response = $this->http($uri, $requestData, 'POST', 'json');
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        return $this->returnResponseHandler($response);
-    }
 
-    /**
-     * @return mixed
-     * @throws \Exception
-     */
-    public function menuQuery()
-    {
-        if (empty($this->accessToken)) {
-            throw new \Exception('AccessToken is empty');
-        }
-        $uri = $this->gateway . 'menu/get?access_token=' . $this->accessToken;
-        try {
-            $response = $this->http($uri);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        return $response;
-    }
 
-    /**
-     * @return bool
-     * @throws \Exception
-     */
-    public function deleteMenu()
-    {
-        if (empty($this->accessToken)) {
-            throw new \Exception('AccessToken is empty');
-        }
-        $uri = $this->gateway . 'menu/delete?access_token=' . $this->accessToken;
-        try {
-            $response = $this->http($uri);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        return $this->returnResponseHandler($response);
-    }
 
-    /**
-     * 获取临时素材的URL
-     * @var string $mediaId
-     * @return string|null
-     */
-    public function getMaterialUrl($mediaId)
-    {
-        $uri = $this->gateway . 'media/get?access_token=' . $this->accessToken . '&media_id=' . $mediaId;
-        try {
-            $response = $this->returnResponseHandler($this->http($uri));
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        foreach (self::FILE_MEDIA_TYPE as $value) {
-            if (isset($response[$value . '_url'])) {
-                return $response[$value. '_url'];   
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 上传临时素材文件
-     * @param MediaFile $file
-     * @param string $type
-     * @return array
-     * @throws Exception
-     */
-    public function uploadMaterial(MediaFile $files, $type = null)
-    {
-        try {
-            $file = $this->uploadFileChecked($files, $type);
-        } catch(Exception $e) {
-            throw $e;
-        }
-        $data['media'] = $this->createFile($file->getFile);
-        $uri = $this->gateway . 'media/upload?access_token=' . $this->accessToken . '&type=' . $type;
-        try {
-            $response = $this->http($uri, $data, 'POST', 'form');
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        return $this->returnResponseHandler($response);
-    }
-
-    /**
-     * 获取永久素材列表
-     * @param string $type
-     * @param int $offset
-     * @param int $limit
-     * @return array
-     */
-    public function getPermanentMaterial($type = self::MEDIA_NEWS, $offset = 0, $limit = 20)
-    {
-        if (!in_array($type, self::FILE_MEDIA_TYPE)) {
-            throw new Exception("错误的素材类型");
-        }
-        $uri = $this->gateway . 'material/batchget_material?access_token=' . $this->accessToken;
-        try {
-            $response = $this->returnResponseHandler($this->http(
-                $uri, ['type' => $type, 'offset' => $offset, 'count' => $limit], 'POST', 'json'
-            ));
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        return $response;
-    }
-
-    /**
-     * 获取永久素材总数
-     * @return array
-     */
-    public function getPermanentMaterialCount()
-    {
-        $uri = $this->gateway . 'material/get_materialcount?access_token=' . $this->accessToken;
-        try {
-            $response = $this->returnResponseHandler($this->http($uri));
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        return $response;
-    }
-
-    /**
-     * 获取永久素材的详情, 如果是图片素材将返回其内容
-     * @param int $mediaId
-     * @return string|null
-     */
-    public function getPermanentMaterialDetail($mediaId)
-    {
-        $uri = $this->gateway . 'material/get_material?access_token=' . $this->accessToken;
-        try {
-            $response = $this->returnResponseHandler($this->http($uri, ['media_id' => $mediaId], 'POST', 'json'));
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        return $response;
-    }
-   
-
-    /**
-     * 上传永久素材
-     * @param MediaFile $file
-     * @param string $type
-     * @return array|mixed
-     * @throws Exception
-     */
-    public function uploadPermanentMaterial(MediaFile $files, $type = null)
-    {
-        try {
-            $file = $this->uploadFileChecked($files, $type);
-        } catch(Exception $e) {
-            throw $e;
-        }
-        $data['media'] = $this->createFile($file->getFile());
-        $uri = $this->gateway . 'material/add_material?access_token=' . $this->accessToken . '&type=' . $type;
-        try {
-            $response = $this->http($uri, $data, 'POST', 'form');
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        return $this->returnResponseHandler($response);
-    }
-
-    /**
-     * 删除永久素材
-     * @param int $mediaId
-     * @return array
-     */
-    public function deletePermanentMaterial($mediaId)
-    {
-        $uri = $this->gateway . 'material/del_material?access_token=' . $this->accessToken;
-        try {
-            $response = $this->returnResponseHandler($this->http($uri, ['media_id' => $mediaId], 'POST', 'json'));
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        return $response;
-    }
-
-    /**
-     * 上传图文素材中的图片
-     * @param array $file
-     * @return array|mixed
-     * @throws Exception
-     */
-    public function uploadMaterialImage(MediaFile $files)
-    {
-        $response = [];
-        foreach ($files as $file) {
-            $file = $files->current();
-            $ext = $file->getExtName();
-            if (!in_array($ext, ['jpg', 'png'])) {
-                $response[] = new Exception("图片类型只能是jpg/png格式");
-                continue;
-            }
-            if ($file->getSize() > 1048576) {
-                $response[] = new Exception('超出文件大小范围，不能超过1MB');
-                continue;
-            }
-            $data['media'] = $this->createFile($file);
-            $uri = $this->gateway . 'media/uploadimg?access_token=' . $this->accessToken;
-            try {
-                $response[] = $this->returnResponseHandler($this->http($uri, $data, 'POST', 'form'));
-            } catch (\Exception $e) {
-                $response[] = $e;
-            }
-        }
-        return $response;
-    }
-
-    
-    /**
-     * @return File
-     */
-    private function uploadFileChecked(MediaFile $files, $type = null)
-    {
-        /**
-         * @var File $file
-         */
-        $file = $files->current();
-        if ($file === null) {
-            throw new Exception('error file');
-        }
-        $ext = $file->getExtName();
-        if (empty($type)) {
-            foreach($this->mediaTypeExt as $wechatType => $mediaTypeExt) {
-                if (in_array($ext, $mediaTypeExt)) {
-                    $type = $wechatType;
-                    break;
-                }
-            }
-        }
-        if ($file->getMediaType() !== $file->getType()) {
-            throw new Exception('文件mine_type与实际的不符');
-        }
-        if (empty($type)) {
-            throw new Exception('通过mine_type无法查找到对的资源类型');
-        }
-        if (!in_array($type, self::FILE_MEDIA_TYPE)) {
-            throw new Exception('无效的资源类型');
-        }
-        if ($this->mediaFileSize[$type] < ($size = $file->getSize())) {
-            $unit = $this->mediaFileSize[$type] >= 1048576
-                    ? ($this->mediaFileSize[$type] / 1048576) . 'MB'
-                    : ($this->mediaFileSize[$type] / 1024) . 'KB';
-            throw new Exception('超出文件大小范围，不能超过' . $unit);
-        }
-        return $file;
-    }
-
-    /**
-     * 新增图文永久素材文章
-     * @param array $content
-     * @param array $file
-     * @return array|mixed
-     * @throws Exception
-     */
-    public function createPictureContent(array $content, MediaFile $files)
-    {
-        if (empty($content['title']) || empty($content['content']) || empty($content['content_source_url'])) {
-            throw new Exception("缺少必填参数");
-        }
-        try {
-            $response = $this->uploadPermanentMaterial($files, self::MEDIA_THUMB);
-        }catch (Exception $e) {
-            throw $e;
-        }
-        $content['thumb_media_id'] = $response['media_id'];
-        $uri = $this->gateway . 'material/add_news?access_token=' . $this->accessToken;
-        $data['articles'] = [$content];
-        try {
-            $response = $this->http($uri, $data, 'POST', 'form');
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        return $this->returnResponseHandler($response);
-    }
 
     /**
      * @param array $file
      * @return \CURLFile|string
      */
-    private function createFile(array $file)
+    public function createFile(array $file)
     {
         $object = '@' . $file['tmp_name'] . ';type=' .  $file['type'] ?? '' . ';filename=' .  $file['name'] ?? '';
         if (function_exists('curl_file_create')) {
@@ -446,51 +154,6 @@ class MpSDK
         }
         return $object;
     }
-
-    /**
-     * 创建用户标签
-     * @param string $name
-     * @return array
-     */
-    public function createUserLabel($name)
-    {
-        $uri = $this->gateway . 'tags/create?access_token=' . $this->accessToken;
-        $data['tag']['name'] = $name;
-        try {
-            $response = $this->http($uri, $data, 'POST', 'json');
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        return $this->returnResponseHandler($response);
-    }
-
-    /**
-     * 获取已创建的标签
-     * @return array|mixed
-     * @throws Exception
-     */
-    public function getLabel()
-    {
-        $uri = $this->gateway . 'tags/get?access_token=' . $this->accessToken;
-        try {
-            $response = $this->http($uri);
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
-        return $this->returnResponseHandler($response);
-    }
-
-    public function updateLabel()
-    {
-
-    }
-
-    public function deleteLabel()
-    {
-
-    }
-
-
 
     /**
      * @return null|string
@@ -502,11 +165,27 @@ class MpSDK
 
 
     /**
+     * @return string
+     */
+    public function getGateway()
+    {
+        return $this->gateway;
+    }
+
+    /**
+     * @param $uri
+     */
+    public function setGateway($uri)
+    {
+        $this->gateway = $uri;
+        return $this;
+    }
+    /**
      * @param $method
      * @param $args
      * @return mixed
      */
-    private function refreshAccessToken(string $method, array $args)
+    public function refreshAccessToken(string $method, array $args)
     {
         $this->requestAccessToken();
         return call_user_func_array([
@@ -519,7 +198,7 @@ class MpSDK
      * @return array|mixed
      * @throws Exception
      */
-    private function returnResponseHandler(array $response)
+    public function returnResponseHandler(array $response)
     {
         if (isset($response['errcode'])) {
             if ($response['errcode'] === 42001) {
@@ -553,7 +232,7 @@ class MpSDK
      * @throws \HttpRequestException
      */
 
-    private function http($uri, array $data = [], $method = 'GET', $contentType = 'html', $header = [])
+    public function http($uri, array $data = [], $method = 'GET', $contentType = 'html', $header = [])
     {
         $curl = curl_init();
         $options = [
@@ -606,5 +285,88 @@ class MpSDK
         }
         curl_close($curl);
         return json_decode($response, true);
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     * @throws Exception
+     */
+    public function getModule($name)
+    {
+        if (isset($this->modules[$name])) {
+            return $this->modules[$name];
+        }
+        $module = null;
+        switch ($name) {
+            case 'menu':
+                $module = new Menu();
+                break;
+            case 'user':
+                $module = new User();
+                break;
+            case 'material':
+                $module = new Material();
+                break;
+        }
+        if ($module === null) {
+            throw new Exception("not found " . $name . " module");
+        }
+        $module->setSdk(self::$instance);
+        $this->modules[$name] = $module;
+        return $this->modules[$name];
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        // TODO: Implement __get() method.
+        return $this->getModule($name);
+    }
+
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     * @throws \ErrorException
+     */
+    public function __call($name, $arguments)
+    {
+        $module = $this->reflectionModules($name);
+        if ($module === null) {
+            throw new \ErrorException("调未用户定义的方法");
+        }
+        return call_user_func_array([$this->getModule($module), $name], $arguments);
+    }
+
+    /**
+     * @param $name
+     * @return null|string
+     */
+    private function reflectionModules($name)
+    {
+        $class = [
+            User::class,
+            Menu::class,
+            Material::class
+        ];
+        foreach ($class as $cls) {
+            $reflection = new ReflectionClass($cls);
+            if ($reflection->hasMethod($name)) {
+                return strtolower($reflection->getShortName());
+            }
+        }
+        return null;
+    }
+
+    /**
+     *
+     */
+    private function __clone()
+    {
+        // TODO: Implement __clone() method.
     }
 }

@@ -11,6 +11,7 @@ namespace Shrimp;
 
 use Shrimp\Response\Response;
 use Shrimp\Response\ResponsePluginInterface;
+use Shrimp\Subscriber\AbstractSubscriber;
 use Shrimp\Subscriber\SubscriberInterface;
 use Shrimp\Subscriber\EventSubscriber;
 use Shrimp\Subscriber\ImageSubscriber;
@@ -69,7 +70,7 @@ class MessageDispatcher
 
     /**
      * @param $subscribers
-     * @param \Bmwxin\Response $response
+     * @param \Shrimp\Response\Response $response
      */
     private function doDispatch($subscribers, Response $response)
     {
@@ -112,7 +113,7 @@ class MessageDispatcher
     }
 
     /**
-     * @param SubscriberInterface $subscriber
+     * @param AbstractSubscriber $subscriber
      */
     private function addSubscribers(SubscriberInterface $subscriber)
     {
