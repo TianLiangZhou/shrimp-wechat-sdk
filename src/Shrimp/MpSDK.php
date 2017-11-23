@@ -12,12 +12,14 @@ use Exception;
 use ReflectionClass;
 use Shrimp\Api\Material;
 use Shrimp\Api\Menu;
+use Shrimp\Api\Message;
 use Shrimp\Api\User;
 
 /**
  * @property Material $material
  * @property Menu $menu
  * @property User $user
+ * @property Message $message
  * Class MpSDK
  * @package Shrimp
  */
@@ -307,6 +309,9 @@ class MpSDK
                 break;
             case 'material':
                 $module = new Material();
+                break;
+            case 'message':
+                $module = new Message();
                 break;
         }
         if ($module === null) {

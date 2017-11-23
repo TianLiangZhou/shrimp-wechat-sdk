@@ -285,7 +285,7 @@ class Material extends Base
         $uri = $this->format('add_news');
         $data['articles'] = [$content];
         try {
-            $response = $this->sdk->http($uri, $data, 'POST', 'form');
+            $response = $this->sdk->http($uri, $data, 'POST', 'json');
         } catch (\Exception $exception) {
             throw $exception;
         }

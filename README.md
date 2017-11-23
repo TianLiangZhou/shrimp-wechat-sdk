@@ -99,6 +99,6 @@ echo $message->dispatch();
 
 ```
 
-####License
+#### License
 
 MIT
