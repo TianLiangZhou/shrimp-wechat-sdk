@@ -16,13 +16,44 @@ namespace Shrimp {
 
         /**
          * MediaFile constructor.
-         * @param array $files {$_FILE}
+         * @param string|array $file {$_FILE || example.png}
          */
-        public function __construct(array $files)
+        public function __construct($file)
         {
-            if ($files) $this->addFile($files);
+            if ($file) {
+                if (is_file($file)) {
+                    $this->addFile($this->formatFile($file));
+                } else if (is_array($file)) {
+                    $this->addFile($file);
+                }
+            }
         }
 
+        /**
+         * @param $file
+         * @return array
+         * @throws \Exception
+         */
+        private function formatFile($file)
+        {
+            $info = pathinfo($file);
+            $type = "";
+            if (MediaType::$mine[$info['extension']]) {
+                $type = is_array(MediaType::$mine[$info['extension']])
+                    ? MediaType::$mine[$info['extension']][0]
+                    : MediaType::$mine[$info['extension']];
+            }
+            if (empty($type)) {
+                throw new \Exception("不能识别的文件");
+            }
+            return [
+                'name' => $info['basename'],
+                'type' => $type,
+                'size' => filesize($file),
+                'tmp_name' => $file,
+                'error'    => 0,
+            ];
+        }
         /**
          * @param array $files
          */

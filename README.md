@@ -3,14 +3,13 @@ Shrimp-wechat-sdk
 
 小虾米微信SDK是一个针对微信公众平台接口的封装。目前已实现了用户、素材、消息、菜单相关的接口，还有自动回复的处理。
 
-####Installation
+#### Installation
 
 ```shell
 composer require shmirp-wechat-sdk/shmirp-wechat-sdk
 ```
 
-
-####Usage
+#### Usage
 
 基本接口的使用
 
@@ -38,8 +37,7 @@ Array
 
 ```
 
-
-####自动回复
+#### 自动回复
 
 ```php
 

@@ -211,7 +211,7 @@ class Material extends Base
                 $response[] = new Exception('超出文件大小范围，不能超过1MB');
                 continue;
             }
-            $data['media'] = $this->sdk->createFile($file);
+            $data['media'] = $this->sdk->createFile($file->getFile());
             $uri = $this->format('uploadimg', true, 'media');
             try {
                 $response[] = $this->sdk->returnResponseHandler(
