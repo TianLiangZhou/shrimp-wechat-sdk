@@ -138,4 +138,23 @@ class Message extends Base
         }
         return $response;
     }
+
+    /**
+     * 设置群发速度
+     * @param $speed
+     * @return array|mixed
+     * @throws \Exception
+     */
+    public function speed($speed = 2)
+    {
+        $uri = $this->format('mass/speed/set');
+        try {
+            $response = $this->sdk->returnResponseHandler(
+                $this->sdk->http($uri, ['speed' => $speed], 'POST', 'json')
+            );
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $response;
+    }
 }

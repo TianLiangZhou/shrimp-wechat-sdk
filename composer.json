@@ -1,5 +1,5 @@
 {
-	"name": "shrimp-wechat-sdk/shrimp-wechat-sdk",
+	"name": "meShell/shrimp-wechat-sdk",
 	"type": "library",
     "description": "小虾米微信公众平台SDK",
     "keywords": ["weixin", "SDK", "wechat", "wechat sdk", "weixin sdk"],

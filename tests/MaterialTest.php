@@ -39,16 +39,7 @@ class MaterialTest extends TestCase
         $this->assertArrayHasKey('media_id', $result);
     }
 
-    /**
-     * @dataProvider massForTagProvider
-     *
-     * @param $mediaId
-     */
-    public function testMassForTag($mediaId)
-    {
-        $result = $this->sdk->message->massForTag($mediaId, \Shrimp\Api\Message::TYPE_NEWS);
-        $this->assertArrayHasKey('msg_id', $result);
-    }
+
 
     /**
      * @return array
@@ -69,14 +60,5 @@ class MaterialTest extends TestCase
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function massForTagProvider()
-    {
-        return [
-            ['oxYTmqZ_fqeXmivUS1lK4r3xoXWlMxK9xep-P92_Q7I'],
-            ['oxYTmqZ_fqeXmivUS1lK4hWRLx-aJL5KnLltds65t_Q']
-        ];
-    }
+
 }
