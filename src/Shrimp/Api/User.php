@@ -238,4 +238,20 @@ class User extends Base
         }
         return $this->sdk->returnResponseHandler($response);
     }
+
+    /**
+     * 获取黑名单
+     * @param string $openId 上个openid
+     * @return array
+     */
+    public function backList($nextOpenId = '')
+    {
+        $uri = $this->format("members/getblacklist", true, "tags");
+        try {
+            $response = $this->sdk->http($uri, ['begin_openid' => $nextOpenId], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->returnResponseHandler($response);
+    }
 }
