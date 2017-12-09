@@ -1,6 +1,7 @@
 <?php
 
 namespace Shrimp\Api;
+use Exception;
 
 class Datacube extends Base
 {
@@ -10,7 +11,8 @@ class Datacube extends Base
      * @param string $begin 开始时间
      * @param string $end 结束时间
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141082
-     * @return array 
+     * @return array
+     * @throws
      */
     public function grow($begin, $end)
     {
@@ -28,7 +30,8 @@ class Datacube extends Base
      * @param string $begin 开始时间
      * @param string $end 结束时间
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141082
-     * @return array 
+     * @return array
+     * @throws
      */
     public function count($begin, $end)
     {
@@ -42,127 +45,288 @@ class Datacube extends Base
     }
 
     /**
+     * 获取图文群发每日数据
+     * @param string $begin
+     * @param string $end
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
+     * @return array|mixed
+     * @throws
      */
-    public function getTodayArticleMass()
+    public function getTodayArticleMass($begin, $end)
     {
-        $this->format('getarticlesummary');
+        $uri = $this->format('getarticlesummary');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取图文群发总数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
+     * @param string $begin
+     * @param string $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getArticleMassCount()
+    public function getArticleMassCount($begin, $end)
     {
-        $this->format('getarticletotal');
+        $uri = $this->format('getarticletotal');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取图文统计数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
+     * @param string $begin
+     * @param string $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getArticleCount()
+    public function getArticleCount($begin, $end)
     {
-        $this->format('getuserread');
+        $uri = $this->format('getuserread');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
-    
+
     /**
+     * 获取图文统计分时数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
+     * @param string $begin
+     * @param string $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getArticleHour()
+    public function getArticleHour($begin, $end)
     {
-        $this->format('getuserreadhour');
+        $uri = $this->format('getuserreadhour');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取图文分享转发数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
+     * @param string $begin
+     * @param string $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getArticleShare()
+    public function getArticleShare($begin, $end)
     {
-        $this->format('getusershare');
+        $uri = $this->format('getusershare');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取图文分享转发分时数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
+     * @param string $begin
+     * @param string $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getArticleShareHour()
+    public function getArticleShareHour($begin, $end)
     {
-        $this->format('getusersharehour');
+        $uri = $this->format('getusersharehour');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取消息发送概况数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
+     * @param string $begin
+     * @param string $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getUpstreamMessage()
+    public function getUpstreamMessage($begin, $end)
     {
-
-        $this->format('getupstreammsg');
+        $uri = $this->format('getupstreammsg');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取消息分送分时数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
+     * @param $begin
+     * @param $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getUpstreamMessageHour()
+    public function getUpstreamMessageHour($begin, $end)
     {
-
-        $this->format('getupstreammsghour');
+        $uri = $this->format('getupstreammsghour');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取消息发送周数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
+     * @param string $begin
+     * @param $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getUpstreamMessageWeek()
+    public function getUpstreamMessageWeek($begin, $end)
     {
-
-        $this->format('getupstreammsgweek');
+        $uri = $this->format('getupstreammsgweek');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
-    
+
     /**
+     * 获取消息发送月数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
+     * @param string $begin
+     * @param $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getUpstreamMessageMonth()
+    public function getUpstreamMessageMonth($begin, $end)
     {
-        $this->format('getupstreammsgmonth');
+        $uri = $this->format('getupstreammsgmonth');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
+
     /**
+     * 获取消息发送分布数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
+     * @param string $begin
+     * @param $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getUpstreamDist()
+    public function getUpstreamDist($begin, $end)
     {
-
-        $this->format('getupstreammsgdist');
+        $uri = $this->format('getupstreammsgdist');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取消息发送分布周数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
+     * @param string $begin
+     * @param $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getUpstreamDistWeek()
+    public function getUpstreamDistWeek($begin, $end)
     {
 
-        $this->format('getupstreammsgdistweek');
+        $uri = $this->format('getupstreammsgdistweek');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取消息发送分布月数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
+     * @param string $begin
+     * @param $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getUpstreamDistMonth()
+    public function getUpstreamDistMonth($begin, $end)
     {
-        $this->format('getupstreammsgdistmonth');
+        $uri = $this->format('getupstreammsgdistmonth');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取接口分析数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141086
+     * @param string $begin
+     * @param $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getInterface()
+    public function getInterface($begin, $end)
     {
-        $this->format('getinterfacesummary');
-        
+        $uri = $this->format('getinterfacesummary');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 
     /**
+     * 获取接口分析分时数据
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141086
+     * @param string $begin
+     * @param string $end
+     * @return array|mixed
+     * @throws Exception
      */
-    public function getInterfaceHour()
+    public function getInterfaceHour($begin, $end)
     {
-        $this->format('getinterfacesummaryhour');
+        $uri = $this->format('getinterfacesummaryhour');
+        try {
+            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+        } catch(Exception $e) {
+            throw $e;
+        }
+        return $this->sdk->returnResponseHandler($response);
     }
 }
