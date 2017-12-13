@@ -14,11 +14,12 @@ class MaterialTest extends TestCase
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->sdk = Shrimp\MpSDK::getInstance('wx983dd48be764e9ce','26b8ccf343bddeecd0402e1b864d2dd4');
+        $this->sdk = new Shrimp\ShrimpWechat('wx983dd48be764e9ce','26b8ccf343bddeecd0402e1b864d2dd4');
     }
 
     /**
      * 测试上传图片
+     * @throws Exception
      */
     public function testUploadFile()
     {
@@ -32,6 +33,7 @@ class MaterialTest extends TestCase
      *
      * @param array $content
      * @param \Shrimp\MediaFile $file
+     * @throws Exception
      */
     public function testCreatePictureContent(array $content, \Shrimp\MediaFile $file)
     {

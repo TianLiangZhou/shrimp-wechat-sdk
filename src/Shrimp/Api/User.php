@@ -7,7 +7,7 @@ namespace Shrimp\Api;
  * Time: 16:56
  */
 use Exception;
-use Shrimp\MpSDK;
+use Shrimp\ShrimpWechat;
 
 class User extends Base
 {

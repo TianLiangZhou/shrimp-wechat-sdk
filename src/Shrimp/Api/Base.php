@@ -9,19 +9,19 @@
 namespace Shrimp\Api;
 
 
-use Shrimp\MpSDK;
+use Shrimp\ShrimpWechat;
 
 class Base
 {
     /**
-     * @var null|MpSDK
+     * @var null|ShrimpWechat
      */
     protected $sdk = null;
 
     /**
-     * @param MpSDK $sdk
+     * @param ShrimpWechat $sdk
      */
-    public function setSdk(MpSDK $sdk)
+    public function setSdk(ShrimpWechat $sdk)
     {
         $this->sdk = $sdk;
     }

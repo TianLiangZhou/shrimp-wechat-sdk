@@ -16,19 +16,43 @@ class Card extends Base
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1451025056
      * @param string $type
      * @param array $baseInfo
+     * @param $exclusive
+     * @param array $advanceInfo
      * @return array|mixed
-     * @throws \HttpRequestException
      * @throws Exception
+     * @throws \HttpRequestException
      */
-    public function create($type, array $baseInfo)
+    public function create($type, array $baseInfo, $exclusive, array $advanceInfo = [])
     {
         $uri = $this->format('create');
+        $property = [
+            'base_info' => $baseInfo,
+            'advanced_info' => $advanceInfo,
+        ];
+
+        switch ($type) {
+            case static::CARD_TYPE_GENERAL_COUPON:
+                $property['deal_detail'] = $exclusive;
+                break;
+            case static::CARD_TYPE_CASH:
+                $property['least_cost'] = $exclusive['least_cost'];
+                $property['reduce_cost']= $exclusive['reduce_cost'];
+                break;
+            case static::CARD_TYPE_DISCOUNT:
+                $property['discount'] = (int)$exclusive;
+                break;
+            case static::CARD_TYPE_GIFT:
+                $property['gift'] = $exclusive;
+                break;
+            case static::CARD_TYPE_GROUPON:
+                $property['default_detail'] = $exclusive;
+                break;
+        }
+
         $data = [
              'card' => [
                  'card_type' => $type,
-                 strtolower($type) => [
-                     'base_info' => $baseInfo
-                 ]
+                 strtolower($type) => $property
              ]
         ];
         try {

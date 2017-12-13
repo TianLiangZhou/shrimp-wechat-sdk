@@ -10,9 +10,13 @@ namespace Shrimp;
 
 use Exception;
 use ReflectionClass;
+use Shrimp\Api\Card;
+use Shrimp\Api\Datacube;
 use Shrimp\Api\Material;
 use Shrimp\Api\Menu;
 use Shrimp\Api\Message;
+use Shrimp\Message\MessageType;
+use Shrimp\Api\Qrcode;
 use Shrimp\Api\User;
 
 /**
@@ -20,10 +24,13 @@ use Shrimp\Api\User;
  * @property Menu $menu
  * @property User $user
  * @property Message $message
- * Class MpSDK
+ * @property Card $card
+ * @property Qrcode $qrcode
+ * @property Datacube $datacube
+ * Class ShrimpWechat
  * @package Shrimp
  */
-class MpSDK
+class ShrimpWechat
 {
     /**
      * @var string
@@ -57,34 +64,17 @@ class MpSDK
     private $modules = [];
 
     /**
-     * @var null
-     */
-    private static $instance = null;
-
-    /**
-     * MpSDK constructor.
+     * ShrimpWechat constructor.
      * @param $appId
      * @param $secret
+     * @throws Exception
      */
-    private function __construct($appId, $secret)
+    public function __construct($appId, $secret)
     {
         $this->appId = $appId;
         $this->secret = $secret;
-        $this->requestAccessToken();
     }
 
-    /**
-     * @param $appId
-     * @param $secret
-     * @return null|static
-     */
-    public static function getInstance($appId = null, $secret = null)
-    {
-        if (self::$instance === null) {
-            self::$instance = new self($appId, $secret);
-        }
-        return self::$instance;
-    }
     /**
      * 验证微信请求
      * @param $token
@@ -129,20 +119,65 @@ class MpSDK
 
     /**
      * @return mixed
+     * @throws Exception
      */
     public function getCallbackIp()
     {
         if (empty($this->accessToken)) {
-            throw new \Exception('AccessToken is empty');
+            throw new Exception('AccessToken is empty');
         }
         $uri = $this->gateway . 'getcallbackip?access_token=' . $this->accessToken;
         return $this->returnResponseHandler($this->http($uri));
     }
 
+    /**
+     * @param $callable
+     * @param string $type
+     * @param int $priority
+     */
+    public function bind($callable, $type = MessageType::TEXT, $priority = 0)
+    {
+        if (!is_object($callable) || !method_exists($callable, '__invoke')) {
+            throw new \InvalidArgumentException('$callable is not a Closure or invokable object.');
+        }
 
+    }
 
+    /**
+     *
+     */
+    public function send()
+    {
+        $message = $this->messageToXml($this->getCurrentStream());
+    }
 
+    /**
+     * @return bool|string
+     */
+    private function getCurrentStream()
+    {
+        return stream_get_contents(
+            fopen('php://input', 'r')
+        );
+    }
 
+    /**
+     * @param $input
+     * @return null|\SimpleXMLElement
+     */
+    private function messageToXml($input)
+    {
+        $backup = libxml_disable_entity_loader(true);
+        $backup_errors = libxml_use_internal_errors(true);
+        $message = simplexml_load_string($input);
+        libxml_disable_entity_loader($backup);
+        libxml_clear_errors();
+        libxml_use_internal_errors($backup_errors);
+        if ($message === false) {
+            return null;
+        }
+        return $message;
+    }
 
     /**
      * @param array $file
@@ -182,10 +217,12 @@ class MpSDK
         $this->gateway = $uri;
         return $this;
     }
+
     /**
      * @param $method
      * @param $args
      * @return mixed
+     * @throws Exception
      */
     public function refreshAccessToken(string $method, array $args)
     {
@@ -299,6 +336,24 @@ class MpSDK
         if (isset($this->modules[$name])) {
             return $this->modules[$name];
         }
+        $module = $this->moduleFactory($name);
+        if ($module === null) {
+            throw new Exception("Not found '" . $name . "' module");
+        }
+        $module->setSdk($this);
+        $this->modules[$name] = $module;
+        if (empty($this->getAccessToken())) {
+            $this->requestAccessToken();
+        }
+        return $this->modules[$name];
+    }
+
+    /**
+     * @param $name
+     * @return null|Material|Menu|Message|User
+     */
+    private function moduleFactory($name)
+    {
         $module = null;
         switch ($name) {
             case 'menu':
@@ -313,18 +368,22 @@ class MpSDK
             case 'message':
                 $module = new Message();
                 break;
+            case 'card':
+                $module = new Card();
+                break;
+            case 'qrcode':
+                $module = new Qrcode();
+                break;
+            case 'datacube':
+                $module = new Datacube();
+                break;
         }
-        if ($module === null) {
-            throw new Exception("not found " . $name . " module");
-        }
-        $module->setSdk(self::$instance);
-        $this->modules[$name] = $module;
-        return $this->modules[$name];
+        return $module;
     }
-
     /**
      * @param $name
      * @return mixed
+     * @throws Exception
      */
     public function __get($name)
     {
@@ -337,6 +396,7 @@ class MpSDK
      * @param $arguments
      * @return mixed
      * @throws \ErrorException
+     * @throws Exception
      */
     public function __call($name, $arguments)
     {
@@ -356,7 +416,11 @@ class MpSDK
         $class = [
             User::class,
             Menu::class,
-            Material::class
+            Material::class,
+            Card::class,
+            Datacube::class,
+            Menu::class,
+            Message::class,
         ];
         foreach ($class as $cls) {
             $reflection = new ReflectionClass($cls);
@@ -370,7 +434,7 @@ class MpSDK
     /**
      *
      */
-    private function __clone()
+    public function __clone()
     {
         // TODO: Implement __clone() method.
     }

@@ -6,7 +6,7 @@ Shrimp-wechat-sdk
 #### Installation
 
 ```shell
-composer require shmirp-wechat-sdk/shmirp-wechat-sdk
+composer require meshell/shmirp-wechat-sdk
 ```
 
 #### Usage
@@ -16,7 +16,7 @@ composer require shmirp-wechat-sdk/shmirp-wechat-sdk
 ```php
 <?php
 
-$sdk  = \Shrimp\MpSDK::getInstance('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+$sdk  = new \Shrimp\ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
 try {
     //直接使用方法名
     $array = $sdk->createMenu(["type" => "click", "name" => "测试三", "key"  => "V1001_TODAY_VIEW"]);
