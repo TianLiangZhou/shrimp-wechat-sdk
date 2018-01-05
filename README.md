@@ -6,7 +6,7 @@ Shrimp-wechat-sdk
 #### Installation
 
 ```shell
-composer require meshell/shmirp-wechat-sdk
+composer require meshell/shrimp-wechat-sdk
 ```
 
 #### Usage
