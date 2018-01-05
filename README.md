@@ -86,4 +86,4 @@ echo $sdk->send();
 
 #### License
 
-The MIT License (MIT). Please see [LICENSE](https://github.com/TianLiangZhou/shrimp-wechat-sdk/blob/master/LICENSES) for more information.
+The MIT License (MIT). Please see [LICENSE](https://github.com/TianLiangZhou/shrimp-wechat-sdk/blob/master/LICENSE) for more information.
