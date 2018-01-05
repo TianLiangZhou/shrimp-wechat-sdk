@@ -9,16 +9,8 @@
 namespace Shrimp\Response;
 
 
-class VideoResponse extends AbstractResponse implements ResponseInterface
+class VideoResponse extends Response
 {
-
-    public function setContent($content)
-    {
-        // TODO: Implement setContent() method.
-        $this->content = $content;
-        return $this;
-    }
-
     public function __toString()
     {
         // TODO: Implement __toString() method.
@@ -33,9 +25,9 @@ class VideoResponse extends AbstractResponse implements ResponseInterface
         }
         return <<<EOF
 <xml>
-    <ToUserName><![CDATA[{$this->package->FromUserName}]]></ToUserName>
-    <FromUserName><![CDATA[{$this->package->ToUserName}]]></FromUserName>
-    <CreateTime>{$this->requestTime}</CreateTime>
+    <ToUserName><![CDATA[{$this->source->FromUserName}]]></ToUserName>
+    <FromUserName><![CDATA[{$this->source->ToUserName}]]></FromUserName>
+    <CreateTime>{$this->currentTime}</CreateTime>
     <MsgType><![CDATA[video]]></MsgType>
     <Video>
     <MediaId><![CDATA[{$mediaId}]]></MediaId>

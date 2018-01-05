@@ -1,5 +1,5 @@
 <?php
-header("Content-MessageType:text/xml");
+header("Content-Type:text/xml");
 include dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
 
@@ -8,59 +8,30 @@ $string = <<<END
  <ToUserName><![CDATA[toUser]]></ToUserName>
  <FromUserName><![CDATA[fromUser]]></FromUserName>
  <CreateTime>1348831860</CreateTime>
- <MsgType><![CDATA[event]]></MsgType>
- <Event><![CDATA[subscribe]]></Event>
+ <MsgType><![CDATA[text]]></MsgType>
+ <Content><![CDATA[nihao]]></Content>
  <MsgId>1234567890123456</MsgId>
  </xml>
 END;
 
-class TextPlugin implements \Shrimp\Response\ResponsePluginInterface
-{
-
-    public function getResponse($package)
-    {
-        // TODO: Implement getResponse() method.
-        return (new \Shrimp\Response\TextResponse($package))->setContent("Hello world");
-    }
-
-    public function type()
-    {
-        // TODO: Implement type() method.
-        return \Shrimp\Message\MessageType::TEXT;
-    }
-
-    public function name()
-    {
-        // TODO: Implement name() method.
-        return "";
-    }
-}
-class EventSubPlugin implements \Shrimp\Response\ResponsePluginInterface
-{
-
-    public function getResponse($package)
-    {
-        // TODO: Implement getResponse() method.
-        return (new \Shrimp\Response\TextResponse($package))->setContent("谢谢你的关注");
-    }
-
-    public function type()
-    {
-        // TODO: Implement type() method.
-        return \Shrimp\Message\MessageType::EVENT;
-    }
-
-    public function name()
-    {
-        // TODO: Implement name() method.
-        return \Shrimp\Message\MessageType::SUBSCRIBE;
-    }
-}
+$sdk  = new \Shrimp\ShrimpWechat( 'wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
 
 
-$message = new \Shrimp\MessageDispatcher(new SimpleXMLElement($string));
+$sdk->bind(function(\Shrimp\GetResponseEvent $response) {
 
-$message->addPlugin(new TextPlugin());
-$message->addPlugin(new EventSubPlugin());
+    $response->setResponse("Hello world");
+});
 
-echo $message->dispatch();
+echo $sdk->send();
+
+//print
+/**
+<xml>
+    <ToUserName><![CDATA[fromUser]]></ToUserName>
+    <FromUserName><![CDATA[toUser]]></FromUserName>
+    <CreateTime>1515134824</CreateTime>
+    <MsgType><![CDATA[text]]></MsgType>
+    <Content><![CDATA[Hello world]]></Content>
+</xml>
+*/
+

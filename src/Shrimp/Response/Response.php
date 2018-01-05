@@ -2,27 +2,43 @@
 /**
  * Created by PhpStorm.
  * User: zhoutianliang
- * Date: 2017/5/3
- * Time: 23:44
+ * Date: 2017/5/4
+ * Time: 9:12
  */
 
 namespace Shrimp\Response;
 
-class Response
+/**
+ * Class AbstractResponse
+ * @package Shrimp\Response
+ */
+abstract class Response implements ResponseInterface
 {
-    private $content = null;
+    protected $source = null;
 
-    public function setContent(ResponseInterface $content)
+    protected $content = null;
+
+    protected $currentTime = null;
+
+    /**
+     * AbstractResponse constructor.
+     * @param $source
+     * @param $content
+     */
+    public function __construct($source, $content)
     {
-        $this->content = $content;
+        $this->source = $source;
+
+        $this->currentTime = time();
+
+        $this->setContent($content);
     }
 
-    public function __toString()
+    /**
+     * @param $content
+     */
+    public function setContent($content)
     {
-        // TODO: Implement __toString() method.
-        if ($this->content) {
-            return (string) $this->content;
-        }
-        return 'success';
+        $this->content = $content;
     }
 }

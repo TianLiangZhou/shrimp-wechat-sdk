@@ -15,9 +15,10 @@ use Shrimp\Api\Datacube;
 use Shrimp\Api\Material;
 use Shrimp\Api\Menu;
 use Shrimp\Api\Message;
-use Shrimp\Message\MessageType;
+use Shrimp\Message\Type;
 use Shrimp\Api\Qrcode;
 use Shrimp\Api\User;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * @property Material $material
@@ -63,16 +64,17 @@ class ShrimpWechat
      */
     private $modules = [];
 
+    private static $dispatcher = null;
     /**
      * ShrimpWechat constructor.
      * @param $appId
      * @param $secret
-     * @throws Exception
      */
     public function __construct($appId, $secret)
     {
         $this->appId = $appId;
         $this->secret = $secret;
+        self::$dispatcher = new EventDispatcher();
     }
 
     /**
@@ -131,24 +133,41 @@ class ShrimpWechat
     }
 
     /**
-     * @param $callable
-     * @param string $type
+     * @param $name
+     * @param $listener
      * @param int $priority
      */
-    public function bind($callable, $type = MessageType::TEXT, $priority = 0)
+    public function bind($listener, $name = Type::TEXT, $priority = 0)
     {
-        if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-            throw new \InvalidArgumentException('$callable is not a Closure or invokable object.');
+        if (!is_callable($listener)) {
+            throw new \InvalidArgumentException("$listener is not a Closure or invokable object.");
         }
-
+        self::$dispatcher->addListener($name, $listener, $priority);
     }
 
     /**
-     *
+     * @return string
      */
     public function send()
     {
-        $message = $this->messageToXml($this->getCurrentStream());
+        $xmlMessage = $this->messageToXml($this->getCurrentStream());
+        if (empty($xmlMessage)) {
+            return 'success';
+        }
+        if (!property_exists($xmlMessage, 'MsgType')) {
+            return 'success';
+        }
+        $type = (string) $xmlMessage->MsgType;
+        $name = $type;
+        if ($type === Type::EVENT) {
+            $name = (string) $xmlMessage->Event;
+        }
+        $event = new GetResponseEvent($xmlMessage);
+        self::$dispatcher->dispatch($name, $event);
+        if ($event->hasResponse()) {
+            return (string) $event->getResponse();
+        }
+        return 'success';
     }
 
     /**
@@ -156,9 +175,14 @@ class ShrimpWechat
      */
     private function getCurrentStream()
     {
-        return stream_get_contents(
-            fopen('php://input', 'r')
-        );
+        if (php_sapi_name() === 'cli') {
+            $fd = STDIN;
+        } else {
+            $fd = fopen('php://input', 'r');
+        }
+        $stream = stream_get_contents($fd);
+        fclose($fd);
+        return $stream;
     }
 
     /**
@@ -169,14 +193,14 @@ class ShrimpWechat
     {
         $backup = libxml_disable_entity_loader(true);
         $backup_errors = libxml_use_internal_errors(true);
-        $message = simplexml_load_string($input);
+        $xml = simplexml_load_string($input);
         libxml_disable_entity_loader($backup);
         libxml_clear_errors();
         libxml_use_internal_errors($backup_errors);
-        if ($message === false) {
+        if ($xml === false) {
             return null;
         }
-        return $message;
+        return $xml;
     }
 
     /**

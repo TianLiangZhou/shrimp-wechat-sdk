@@ -9,16 +9,8 @@
 namespace Shrimp\Response;
 
 
-class MusicResponse extends AbstractResponse implements ResponseInterface
+class MusicResponse extends Response
 {
-
-    public function setContent($content)
-    {
-        // TODO: Implement setContent() method.
-        $this->content = $content;
-        return $this;
-    }
-
     public function __toString()
     {
         // TODO: Implement __toString() method.
@@ -35,9 +27,9 @@ class MusicResponse extends AbstractResponse implements ResponseInterface
         }
         return <<<EOF
 <xml>
-    <ToUserName><![CDATA[{$this->FromUserName}]]></ToUserName>
-    <FromUserName><![CDATA[{$this->ToUserName}]]></FromUserName>
-    <CreateTime>{$this->requestTime}</CreateTime>
+    <ToUserName><![CDATA[{$this->source->FromUserName}]]></ToUserName>
+    <FromUserName><![CDATA[{$this->source->ToUserName}]]></FromUserName>
+    <CreateTime>{$this->currentTime}</CreateTime>
     <MsgType><![CDATA[music]]></MsgType>
     <Music>
         <Title><![CDATA[{$title}]]></Title>

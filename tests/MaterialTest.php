@@ -11,6 +11,14 @@ use PHPUnit\Framework\TestCase;
 class MaterialTest extends TestCase
 {
     private $sdk = null;
+
+    /**
+     * MaterialTest constructor.
+     * @param null $name
+     * @param array $data
+     * @param string $dataName
+     * @throws Exception
+     */
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);

@@ -9,25 +9,23 @@
 namespace Shrimp\Response;
 
 
-class NewsResponse extends AbstractResponse implements ResponseInterface
+class NewsResponse extends Response
 {
-
-    public function setContent($content)
-    {
-        // TODO: Implement setContent() method.
-        $this->content = $content;
-        return $this;
-    }
-
     public function __toString()
     {
         // TODO: Implement __toString() method.
-        if (!is_array($this->content) || !isset($this->content[0])) {
-            return "";
+        if (!is_array($this->content)) {
+            return "success";
         }
-        $count = count($this->content);
+        $items = [];
+        if (!isset($this->content[0])) {
+            $items[0] = $this->content;
+        } else {
+            $items = $this->content;
+        }
+        $count = count($items);
         $item = [];
-        foreach ($this->content as $value) {
+        foreach ($items as $value) {
             $item[] = <<<EOF
 <item>
     <Title><![CDATA[{$value['title']}]]></Title> 
@@ -40,9 +38,9 @@ EOF;
         $items = implode('', $item);
         return <<<EOF
 <xml>
-    <ToUserName><![CDATA[{$this->package->FromUserName}]]></ToUserName>
-    <FromUserName><![CDATA[{$this->package->ToUserName}]]></FromUserName>
-    <CreateTime>{$this->requestTime}</CreateTime>
+    <ToUserName><![CDATA[{$this->source->FromUserName}]]></ToUserName>
+    <FromUserName><![CDATA[{$this->source->ToUserName}]]></FromUserName>
+    <CreateTime>{$this->currentTime}</CreateTime>
     <MsgType><![CDATA[news]]></MsgType>
     <ArticleCount>{$count}</ArticleCount>
     <Articles>

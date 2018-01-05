@@ -9,7 +9,7 @@
 namespace Shrimp\Message;
 
 
-class MessageType
+class Type
 {
     const TEXT = 'text';
     const IMAGE = 'image';

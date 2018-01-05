@@ -35,6 +35,8 @@ Array
     [errmsg] => ok
 )
 
+
+
 ```
 
 #### 自动回复
@@ -43,59 +45,42 @@ Array
 
 <?php
 
-//添加一个消息为text类型的处理
-class Text implements \Shrimp\Response\ResponsePluginInterface
-{
-    
-    //返回内容
-    public function getResponse($package)
-    {
-        // TODO: Implement getResponse() method.
-        return (new \Shrimp\Response\TextResponse($package))->setContent("Hello world");
-    }
-    
-    //处理的消息类型
-    public function type()
-    {
-        // TODO: Implement type() method.
-        return \Shrimp\Message\MessageType::TEXT;
-    }
-    
-    //事件名
-    public function name()
-    {
-        // TODO: Implement name() method.
-        return "";
-    }
-}
+$sdk  = new \Shrimp\ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
 
-//添加一个消息为事件的类型处理
-class Subscriber implements \Shrimp\Response\ResponsePluginInterface
-{
-    
-    public function getResponse($package)
-    {
-        // TODO: Implement getResponse() method.
-        return (new \Shrimp\Response\TextResponse($package))->setContent("谢谢你的关注");
-    }
+$sdk->bind(function(\Shrimp\GetResponseEvent $response) {
+    $response->setResponse("Hello world"); //回给用户Hello world
+}); //默认绑定text消息
 
-    public function type()
-    {
-        // TODO: Implement type() method.
-        return \Shrimp\Message\MessageType::EVENT;
-    }
+echo $sdk->send();
 
-    public function name()
-    {
-        // TODO: Implement name() method.
-        return \Shrimp\Message\MessageType::SUBSCRIBE;
-    }
-}
 
-$message = new \Shrimp\MessageDispatcher(new SimpleXMLElement($xmlData));
-$message->addPlugin(new Text());
-$message->addPlugin(new Subscriber());
-echo $message->dispatch();
+//判断消息是不是等于activity, 等于就返回新闻消息
+$sdk->bind(function(\Shrimp\GetResponseEvent $response) use ($sdk) {
+    $text = (string) $response->getAttribute('Content');
+    if ($text === 'activity') {
+        $response->setResponse([
+            'type' => \Shrimp\Message\Type::NEWS,
+            'content' => [
+                'title' => '抽奖活动',
+                'pic_url'   => 'http://activity.example/images/activity.jpg',
+                'url'   => 'http://activity.example.com/888',
+                'description' => 'test'
+            ],
+        ]);
+    } else if ($text === 'code') { //等于code 就回复一个图片给用户
+        $file = $sdk->material->uploadPermanentMaterial(new \Shrimp\MediaFile(dirname(__DIR__) . '/content-image.png'));
+        $response->setResponse(
+            new \Shrimp\Response\ImageResponse($response->getMessageSource(), $file['media_id'])
+        );
+        // or 
+        /**
+        $response->setResponse(['type' => \Shrimp\Message\Type::IMAGE, 'content' => $file['media_id']]);
+        */
+        
+    }
+}, \Shrimp\Message\Type::TEXT);
+
+echo $sdk->send();
 
 ```
 

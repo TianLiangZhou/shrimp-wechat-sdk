@@ -45,11 +45,14 @@ class Material extends Base
         self::MEDIA_VOICE => 2 * 1048576,
         self::MEDIA_VIDEO => 10 * 1048576,
         self::MEDIA_THUMB => 64 * 1024,
-    ];    /**
- *
+    ];
+
+    /**
+     *
      * 获取临时素材的URL
      * @var string $mediaId
      * @return string|null
+     * @throws Exception
      */
     public function getMaterialUrl($mediaId)
     {
@@ -97,6 +100,7 @@ class Material extends Base
      * @param int $offset
      * @param int $limit
      * @return array
+     * @throws Exception
      */
     public function getPermanentMaterial($type = self::MEDIA_NEWS, $offset = 0, $limit = 20)
     {
@@ -119,6 +123,7 @@ class Material extends Base
     /**
      * 获取永久素材总数
      * @return array
+     * @throws Exception
      */
     public function getPermanentMaterialCount()
     {
@@ -135,6 +140,7 @@ class Material extends Base
      * 获取永久素材的详情, 如果是图片素材将返回其内容
      * @param int $mediaId
      * @return string|null
+     * @throws Exception
      */
     public function getPermanentMaterialDetail($mediaId)
     {
@@ -157,7 +163,7 @@ class Material extends Base
      * @return array|mixed
      * @throws Exception
      */
-    public function uploadPermanentMaterial(MediaFile $files, $type = null)
+    public function uploadPermanentMaterial(MediaFile $files, $type = null, $paramters = [])
     {
         try {
             list($file, $type) = $this->uploadFileChecked($files, $type);
@@ -166,6 +172,10 @@ class Material extends Base
         }
         $data['media'] = $this->sdk->createFile($file->getFile());
         $uri = $this->format('add_material') . '&type=' . $type;
+        if ($type === 'video') {
+            $data['title'] = $paramters['title'];
+            $data['introduction'] = $paramters['description'];
+        }
         try {
             $response = $this->sdk->http($uri, $data, 'POST', 'form');
         } catch (\Exception $exception) {
@@ -178,6 +188,7 @@ class Material extends Base
      * 删除永久素材
      * @param int $mediaId
      * @return array
+     * @throws Exception
      */
     public function deletePermanentMaterial($mediaId)
     {
@@ -226,7 +237,10 @@ class Material extends Base
 
 
     /**
+     * @param MediaFile $files
+     * @param null $type
      * @return array
+     * @throws Exception
      */
     private function uploadFileChecked(MediaFile $files, $type = null)
     {

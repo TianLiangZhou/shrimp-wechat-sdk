@@ -11,7 +11,5 @@ namespace Shrimp\Response;
 
 interface ResponseInterface
 {
-    public function setContent($content);
-
     public function __toString();
 }
