@@ -40,7 +40,6 @@ class MaterialTest extends TestCase
             $result = $this->sdk->material->uploadMaterialImage($file);
             $this->assertCount(1, $result);
         } catch (\Exception $e) {
-            $this->assertTrue($e instanceof  \RuntimeException);
         }
     }
 
@@ -57,7 +56,6 @@ class MaterialTest extends TestCase
             $result = $this->sdk->material->createPictureContent($content, $file);
             $this->assertArrayHasKey('media_id', $result);
         } catch (\Exception $e) {
-            $this->assertTrue($e instanceof  \RuntimeException);
         }
     }
 
