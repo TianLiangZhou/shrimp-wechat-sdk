@@ -17,11 +17,24 @@
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.5",
-        "phpunit/phpunit": "^6.0"
+        "phpunit/phpunit": "^6.0",
+        "friendsofphp/php-cs-fixer": "^2.3"
     },
     "autoload": {
     	"psr-0": {
     		"Shrimp": "src/"
     	}
+    },
+    "scripts": {
+        "format": [
+            "@fixer"
+        ],
+        "test": [
+            "@phpunit",
+            "@phpcs"
+        ],
+        "phpunit": "vendor/bin/phpunit",
+        "phpcs": "vendor/bin/phpcs",
+        "fixer": "vendor/bin/php-cs-fixer fix ./src --rules=@PSR2"
     }
 }

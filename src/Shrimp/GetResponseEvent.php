@@ -8,7 +8,6 @@
 
 namespace Shrimp;
 
-
 use Shrimp\Response\Response;
 use Shrimp\Response\TextResponse;
 use Symfony\Component\EventDispatcher\Event;

@@ -8,7 +8,6 @@
 
 namespace Shrimp\Response;
 
-
 class TextResponse extends Response
 {
     public function __toString()

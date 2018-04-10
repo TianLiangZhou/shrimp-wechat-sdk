@@ -8,7 +8,6 @@
 
 namespace Shrimp\Response;
 
-
 class VideoResponse extends Response
 {
     public function __toString()
@@ -36,6 +35,5 @@ class VideoResponse extends Response
     </Video> 
 </xml>
 EOF;
-
     }
 }

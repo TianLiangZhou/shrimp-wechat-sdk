@@ -8,7 +8,6 @@
 
 namespace Shrimp\Api;
 
-
 use Shrimp\ShrimpWechat;
 
 class Base

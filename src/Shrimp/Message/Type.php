@@ -8,7 +8,6 @@
 
 namespace Shrimp\Message;
 
-
 class Type
 {
     const TEXT = 'text';

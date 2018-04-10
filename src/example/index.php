@@ -14,11 +14,10 @@ $string = <<<END
  </xml>
 END;
 
-$sdk  = new \Shrimp\ShrimpWechat( 'wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+$sdk  = new \Shrimp\ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
 
 
-$sdk->bind(function(\Shrimp\GetResponseEvent $response) {
-
+$sdk->bind(function (\Shrimp\GetResponseEvent $response) {
     $response->setResponse("Hello world");
 });
 
@@ -34,4 +33,3 @@ echo $sdk->send();
     <Content><![CDATA[Hello world]]></Content>
 </xml>
 */
-

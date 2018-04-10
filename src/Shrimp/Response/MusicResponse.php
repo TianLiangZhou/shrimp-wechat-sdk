@@ -8,7 +8,6 @@
 
 namespace Shrimp\Response;
 
-
 class MusicResponse extends Response
 {
     public function __toString()
@@ -40,6 +39,5 @@ class MusicResponse extends Response
     </Music>
 </xml>
 EOF;
-
     }
 }

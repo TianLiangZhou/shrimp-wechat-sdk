@@ -8,7 +8,6 @@
 
 namespace Shrimp\Response;
 
-
 class NewsResponse extends Response
 {
     public function __toString()
@@ -48,6 +47,5 @@ EOF;
     </Articles>
 </xml>
 EOF;
-
     }
 }

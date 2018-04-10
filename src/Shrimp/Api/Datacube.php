@@ -1,6 +1,7 @@
 <?php
 
 namespace Shrimp\Api;
+
 use Exception;
 
 class Datacube extends Base
@@ -19,7 +20,7 @@ class Datacube extends Base
         $uri = $this->format("getusersummary");
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -38,7 +39,7 @@ class Datacube extends Base
         $uri = $this->format("getusercumulate");
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -57,7 +58,7 @@ class Datacube extends Base
         $uri = $this->format('getarticlesummary');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -76,7 +77,7 @@ class Datacube extends Base
         $uri = $this->format('getarticletotal');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -95,7 +96,7 @@ class Datacube extends Base
         $uri = $this->format('getuserread');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -114,7 +115,7 @@ class Datacube extends Base
         $uri = $this->format('getuserreadhour');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -133,7 +134,7 @@ class Datacube extends Base
         $uri = $this->format('getusershare');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -152,7 +153,7 @@ class Datacube extends Base
         $uri = $this->format('getusersharehour');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -171,7 +172,7 @@ class Datacube extends Base
         $uri = $this->format('getupstreammsg');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -190,7 +191,7 @@ class Datacube extends Base
         $uri = $this->format('getupstreammsghour');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -209,7 +210,7 @@ class Datacube extends Base
         $uri = $this->format('getupstreammsgweek');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -228,7 +229,7 @@ class Datacube extends Base
         $uri = $this->format('getupstreammsgmonth');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -247,7 +248,7 @@ class Datacube extends Base
         $uri = $this->format('getupstreammsgdist');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -263,11 +264,10 @@ class Datacube extends Base
      */
     public function getUpstreamDistWeek($begin, $end)
     {
-
         $uri = $this->format('getupstreammsgdistweek');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -286,7 +286,7 @@ class Datacube extends Base
         $uri = $this->format('getupstreammsgdistmonth');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -305,7 +305,7 @@ class Datacube extends Base
         $uri = $this->format('getinterfacesummary');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);
@@ -324,7 +324,7 @@ class Datacube extends Base
         $uri = $this->format('getinterfacesummaryhour');
         try {
             $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);

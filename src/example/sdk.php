@@ -8,8 +8,10 @@
 include dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
 
-$sdk  = new \Shrimp\ShrimpWechat( 'wx983dd48be764e9ce',
-        '26b8ccf343bddeecd0402e1b864d2dd4');
+$sdk  = new \Shrimp\ShrimpWechat(
+    'wx983dd48be764e9ce',
+    '26b8ccf343bddeecd0402e1b864d2dd4'
+);
 print_r($sdk->createMenu([
 
           "type" => "click",

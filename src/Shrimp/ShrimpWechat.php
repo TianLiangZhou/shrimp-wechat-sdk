@@ -49,7 +49,7 @@ class ShrimpWechat
     /**
      * @var int
      */
-    private $timeout = 3;
+    private $timeout = 15;
 
     /**
      * @var string
@@ -325,6 +325,7 @@ class ShrimpWechat
                     array_walk_recursive($data, [$xml, 'addChild']);
                     $requestData = $xml->asXML();
                 }
+                // no break
             case 'form':
                 array_push($header, "multipart/form-data");
                 $requestData = $data ? $data : null;
@@ -344,7 +345,7 @@ class ShrimpWechat
         curl_setopt_array($curl, $options);
         $response = curl_exec($curl);
         if (curl_errno($curl)) {
-            throw new \HttpRequestException(curl_error($curl));
+            throw new \RuntimeException(curl_error($curl));
         }
         curl_close($curl);
         return json_decode($response, true);
@@ -434,6 +435,7 @@ class ShrimpWechat
     /**
      * @param $name
      * @return null|string
+     * @throws \ReflectionException
      */
     private function reflectionModules($name)
     {

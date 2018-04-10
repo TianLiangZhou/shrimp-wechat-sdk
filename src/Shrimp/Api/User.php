@@ -1,5 +1,6 @@
 <?php
 namespace Shrimp\Api;
+
 /**
  * Created by PhpStorm.
  * User: zhoutianliang
@@ -57,7 +58,10 @@ class User extends Base
 
         try {
             $response = $this->sdk->http(
-                $uri, ['tag' => ['id' => $id, 'name' => $name]], 'POST', 'json'
+                $uri,
+                ['tag' => ['id' => $id, 'name' => $name]],
+                'POST',
+                'json'
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -76,7 +80,10 @@ class User extends Base
         $uri = $this->format('delete', true, 'tags');
         try {
             $response = $this->sdk->http(
-                $uri, ['tag' => ['id' => $id]], 'POST', 'json'
+                $uri,
+                ['tag' => ['id' => $id]],
+                'POST',
+                'json'
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -96,7 +103,10 @@ class User extends Base
         $uri = $this->format('tag/get');
         try {
             $response = $this->sdk->http(
-                $uri, ['tagid' => $id, 'next_openid' => $openId], 'POST', 'json'
+                $uri,
+                ['tagid' => $id, 'next_openid' => $openId],
+                'POST',
+                'json'
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -116,7 +126,10 @@ class User extends Base
         $uri = $this->format('members/batchtagging', true, 'tags');
         try {
             $response = $this->sdk->http(
-                $uri, ['openid_list' => $openId, 'tagid' => $id], 'POST', 'json'
+                $uri,
+                ['openid_list' => $openId, 'tagid' => $id],
+                'POST',
+                'json'
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -136,7 +149,10 @@ class User extends Base
         $uri = $this->format('members/batchuntagging', true, 'tags');
         try {
             $response = $this->sdk->http(
-                $uri, ['openid_list' => $openId, 'tagid' => $id], 'POST', 'json'
+                $uri,
+                ['openid_list' => $openId, 'tagid' => $id],
+                'POST',
+                'json'
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -155,7 +171,10 @@ class User extends Base
         $uri = $this->format('getidlist', true, 'tags');
         try {
             $response = $this->sdk->http(
-                $uri, ['openid' => $openId], 'POST', 'json'
+                $uri,
+                ['openid' => $openId],
+                'POST',
+                'json'
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -209,7 +228,7 @@ class User extends Base
     {
         $uri = $this->format('info/batchget');
         try {
-            $list = array_map(function($id) use ($lang) {
+            $list = array_map(function ($id) use ($lang) {
                 return [
                     'openid' => $id, 'lang' => $lang
                 ];
@@ -249,7 +268,7 @@ class User extends Base
         $uri = $this->format("members/getblacklist", true, "tags");
         try {
             $response = $this->sdk->http($uri, ['begin_openid' => $nextOpenId], 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->returnResponseHandler($response);

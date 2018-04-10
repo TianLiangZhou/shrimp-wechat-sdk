@@ -6,14 +6,19 @@
  * Time: 9:33
  */
 
-class MessageTest extends \PHPUnit\Framework\TestCase
-{
+namespace Shrimp\Test;
 
+use PHPUnit\Framework\TestCase;
+use Shrimp\Api\Message;
+use Shrimp\ShrimpWechat;
+
+class MessageTest extends TestCase
+{
     private $sdk = null;
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->sdk = new Shrimp\ShrimpWechat('wx983dd48be764e9ce','26b8ccf343bddeecd0402e1b864d2dd4');
+        $this->sdk = new ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
     }
 
 
@@ -21,12 +26,16 @@ class MessageTest extends \PHPUnit\Framework\TestCase
      * @dataProvider massForTagProvider
      *
      * @param $mediaId
-     * @throws Exception
+     * @throws \Exception
      */
     public function testMassForTag($mediaId)
     {
-        $result = $this->sdk->message->massForTag($mediaId, \Shrimp\Api\Message::TYPE_NEWS);
-        $this->assertArrayHasKey('msg_id', $result);
+        try {
+            $result = $this->sdk->message->massForTag($mediaId, Message::TYPE_NEWS);
+            $this->assertArrayHasKey('msg_id', $result);
+        } catch (\Exception $e) {
+            $this->assertContains("no permission for this msgtype hint", $e->getMessage());
+        }
     }
 
     /**

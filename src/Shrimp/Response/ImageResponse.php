@@ -8,7 +8,6 @@
 
 namespace Shrimp\Response;
 
-
 class ImageResponse extends Response
 {
     public function __toString()
@@ -25,6 +24,5 @@ class ImageResponse extends Response
     </Image>
 </xml>
 EOF;
-
     }
 }

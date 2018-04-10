@@ -40,7 +40,7 @@ class Qrcode extends Base
         $uri = $this->format('create');
         try {
             $response = $this->sdk->http($uri, $data, 'POST', 'json');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);

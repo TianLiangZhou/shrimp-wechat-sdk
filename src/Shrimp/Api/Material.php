@@ -1,5 +1,6 @@
 <?php
 namespace Shrimp\Api;
+
 /**
  * Created by PhpStorm.
  * User: zhoutianliang
@@ -12,7 +13,6 @@ use Shrimp\MediaFile;
 
 class Material extends Base
 {
-
     const MEDIA_IMAGE = 'image';
 
     const MEDIA_VOICE = 'voice';
@@ -81,7 +81,7 @@ class Material extends Base
     {
         try {
             list($file, $type) = $this->uploadFileChecked($files, $type);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         $data['media'] = $this->sdk->createFile($file->getFile);
@@ -111,7 +111,10 @@ class Material extends Base
         try {
             $response = $this->sdk->returnResponseHandler(
                 $this->sdk->http(
-                    $uri, ['type' => $type, 'offset' => $offset, 'count' => $limit], 'POST', 'json'
+                    $uri,
+                    ['type' => $type, 'offset' => $offset, 'count' => $limit],
+                    'POST',
+                    'json'
                 )
             );
         } catch (\Exception $exception) {
@@ -167,7 +170,7 @@ class Material extends Base
     {
         try {
             list($file, $type) = $this->uploadFileChecked($files, $type);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         $data['media'] = $this->sdk->createFile($file->getFile());
@@ -253,7 +256,7 @@ class Material extends Base
         }
         $ext = $file->getExtName();
         if (empty($type)) {
-            foreach($this->mediaTypeExt as $wechatType => $mediaTypeExt) {
+            foreach ($this->mediaTypeExt as $wechatType => $mediaTypeExt) {
                 if (in_array($ext, $mediaTypeExt)) {
                     $type = $wechatType;
                     break;
@@ -292,7 +295,7 @@ class Material extends Base
         }
         try {
             $response = $this->uploadPermanentMaterial($files, self::MEDIA_THUMB);
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         $content['thumb_media_id'] = $response['media_id'];

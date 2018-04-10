@@ -1,5 +1,6 @@
 <?php
 namespace Shrimp\Api;
+
 /**
  * Created by PhpStorm.
  * User: zhoutianliang

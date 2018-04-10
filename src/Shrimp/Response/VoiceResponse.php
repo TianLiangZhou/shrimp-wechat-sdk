@@ -8,7 +8,6 @@
 
 namespace Shrimp\Response;
 
-
 class VoiceResponse extends Response
 {
     public function __toString()
@@ -25,6 +24,5 @@ class VoiceResponse extends Response
     </Voice>
 </xml>
 EOF;
-
     }
 }

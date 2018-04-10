@@ -1,6 +1,9 @@
 Shrimp-wechat-sdk
 =================
 
+[![Build Status](https://travis-ci.org/TianLiangZhou/shrimp-wechat-sdk.svg?branch=master)](https://travis-ci.org/TianLiangZhou/shrimp-wechat-sdk)
+[![License](https://img.shields.io/badge/license-mit-blue.svg)](LICENSE)
+
 小虾米微信SDK是一个针对微信公众平台接口的封装。目前已实现了用户、素材、消息、菜单相关的接口，还有自动回复的处理。
 
 #### Installation
@@ -86,4 +89,4 @@ echo $sdk->send();
 
 #### License
 
-The MIT License (MIT). Please see [LICENSE](https://github.com/TianLiangZhou/shrimp-wechat-sdk/blob/master/LICENSE) for more information.
+The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.

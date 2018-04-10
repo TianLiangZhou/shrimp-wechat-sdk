@@ -8,7 +8,6 @@
 
 namespace Shrimp\Api;
 
-
 /**
  * 消息接口
  *
@@ -17,7 +16,6 @@ namespace Shrimp\Api;
  */
 class Message extends Base
 {
-
     const TYPE_NEWS = 'mpnews';
     const TYPE_TEXT = 'text';
     const TYPE_VOICE = 'voice';

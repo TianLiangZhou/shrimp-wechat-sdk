@@ -8,7 +8,6 @@
 
 namespace Shrimp\Response;
 
-
 interface ResponseInterface
 {
     public function __toString();
