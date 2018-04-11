@@ -6,7 +6,9 @@ php:
 before_script:
   - composer install
 
-script: phpunit --coverage-text
+script: phpunit --coverage-clover clover.xml
+
+after_success: vendor/bin/php-coveralls  -v --exclude-no-stmt -x clover.xml
 
 notifications:
   email:

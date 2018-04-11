@@ -2,6 +2,8 @@ Shrimp-wechat-sdk
 =================
 
 [![Build Status](https://travis-ci.org/TianLiangZhou/shrimp-wechat-sdk.svg?branch=master)](https://travis-ci.org/TianLiangZhou/shrimp-wechat-sdk)
+[![Coverage Status](https://coveralls.io/repos/github/TianLiangZhou/shrimp-wechat-sdk/badge.svg?branch=master)](https://coveralls.io/github/TianLiangZhou/shrimp-wechat-sdk?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/eb4a04fc8f43da3ccef0/maintainability)](https://codeclimate.com/github/TianLiangZhou/shrimp-wechat-sdk/maintainability)
 [![License](https://img.shields.io/badge/license-mit-blue.svg)](LICENSE)
 
 小虾米微信SDK是一个针对微信公众平台接口的封装。目前已实现了用户、素材、消息、菜单相关的接口，还有自动回复的处理。
