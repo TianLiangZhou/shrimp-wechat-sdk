@@ -8,8 +8,10 @@
 
 namespace Shrimp;
 
+use CURLFile;
 use Exception;
 use ReflectionClass;
+use RuntimeException;
 use Shrimp\Api\Card;
 use Shrimp\Api\Datacube;
 use Shrimp\Api\Material;
@@ -64,16 +66,58 @@ class ShrimpWechat
      */
     private $modules = [];
 
+    /**
+     * @var null|EventDispatcher
+     */
     private static $dispatcher = null;
+
+    /**
+     * @var null|\Closure
+     */
+    private $writeAccessTokenCallable = null;
+
+    /**
+     * @var null|\Closure
+     */
+    private $readAccessTokenCallable = null;
+
+    /**
+     * @var string
+     */
+    private $defaultCacheDir = __DIR__;
+
     /**
      * ShrimpWechat constructor.
      * @param $appId
      * @param $secret
      */
-    public function __construct($appId, $secret)
+    public function __construct($appId, $secret, $bindAccessTokenCallable = true, $cacheDir = __DIR__)
     {
         $this->appId = $appId;
         $this->secret = $secret;
+        $this->defaultCacheDir = $cacheDir;
+        if ($bindAccessTokenCallable) {
+            $this->registerWriteAccessTokenCallback(function($accessToken, $expire) {
+                if (!is_writable(__DIR__)) {
+                    throw new RuntimeException(sprintf("Directory is not writable '%s'", __DIR__ ));
+                }
+                $filename = __DIR__ . DIRECTORY_SEPARATOR . 'shrimp.access_token.php';
+
+                file_put_contents($filename, serialize([$accessToken, $expire, time()]));
+                return true;
+            });
+            $this->registerReadAccessTokenCallback(function() {
+                $filename = __DIR__ . DIRECTORY_SEPARATOR . 'shrimp.access_token.php';
+                if (file_exists($filename)) {
+                    list($accessToken, $expire, $time) = unserialize(file_get_contents($filename));
+                    if (time() > $time + $expire) {
+                        return null;
+                    }
+                    return $accessToken;
+                }
+                return null;
+            });
+        }
         self::$dispatcher = new EventDispatcher();
     }
 
@@ -114,7 +158,11 @@ class ShrimpWechat
         } catch (Exception $e) {
             throw $e;
         }
-        $this->setAccessToken($response['access_token']);
+        $callable = $this->writeAccessTokenCallable
+            ? $this->writeAccessTokenCallable
+            : [$this, 'setAccessToken'];
+
+        call_user_func($callable, $response['access_token'], $response['expires_in']);
         return $this;
     }
 
@@ -146,6 +194,35 @@ class ShrimpWechat
     }
 
     /**
+     * 注册请求的accessToken之后写入的回调
+     *
+     * @param callable $callback
+     * @return $this
+     */
+    public function registerWriteAccessTokenCallback(callable $callback)
+    {
+        $this->writeAccessTokenCallable = $callback;
+
+        return $this;
+    }
+
+    /**
+     * 注册获取accessToken的回调
+     *
+     * @param callable $callback
+     * @return $this
+     */
+    public function registerReadAccessTokenCallback(callable $callback)
+    {
+        $this->readAccessTokenCallable = $callback;
+
+        return $this;
+    }
+
+
+    /**
+     * 自动回复
+     *
      * @return string
      */
     public function send()
@@ -205,7 +282,7 @@ class ShrimpWechat
 
     /**
      * @param array $file
-     * @return \CURLFile|string
+     * @return CURLFile|string
      */
     public function createFile(array $file)
     {
@@ -221,6 +298,9 @@ class ShrimpWechat
      */
     public function getAccessToken()
     {
+        if ($this->readAccessTokenCallable) {
+            return call_user_func($this->readAccessTokenCallable);
+        }
         return $this->accessToken;
     }
 
@@ -292,7 +372,7 @@ class ShrimpWechat
      * @param array $data
      * @param string $method
      * @return mixed
-     * @throws \HttpRequestException
+     * @throws \RuntimeException
      */
 
     public function http($uri, array $data = [], $method = 'GET', $contentType = 'html', $header = [])
@@ -460,7 +540,7 @@ class ShrimpWechat
     /**
      *
      */
-    public function __clone()
+    private function __clone()
     {
         // TODO: Implement __clone() method.
     }
