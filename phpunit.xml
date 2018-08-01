@@ -4,7 +4,6 @@
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutTodoAnnotatedTests="true"
-         strict="true"
          verbose="true">
     <testsuite name="PHPUnit Skeleton Generator">
         <directory suffix="Test.php">tests</directory>
