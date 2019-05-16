@@ -27,7 +27,7 @@ class Xml
      */
     public static function parse(string $xml)
     {
-        return self::normalize(self::simpleXmlElement($xml));
+        return self::normalize(self::simple($xml));
     }
 
     /**
@@ -72,7 +72,7 @@ class Xml
      *
      * @return SimpleXMLElement
      */
-    public static function simpleXmlElement(string $inputXml): ?SimpleXMLElement
+    public static function simple(string $inputXml): ?SimpleXMLElement
     {
         $backup = libxml_disable_entity_loader(true);
         $backup_errors = libxml_use_internal_errors(true);

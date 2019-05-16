@@ -244,7 +244,7 @@ class ShrimpWechat
      */
     public function send()
     {
-        $xmlMessage = Support\Xml::simpleXmlElement($this->getCurrentStream());
+        $xmlMessage = Support\Xml::simple($this->getCurrentStream());
         if (empty($xmlMessage)) {
             return 'success';
         }
