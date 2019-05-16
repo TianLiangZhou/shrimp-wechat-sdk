@@ -48,8 +48,8 @@ class Material extends Base
     ];
 
     /**
-     *
      * 获取临时素材的URL
+     *
      * @var string $mediaId
      * @return string|null
      * @throws Exception
@@ -72,6 +72,7 @@ class Material extends Base
 
     /**
      * 上传临时素材文件
+     *
      * @param MediaFile $file
      * @param string $type
      * @return array
@@ -96,6 +97,7 @@ class Material extends Base
 
     /**
      * 获取永久素材列表
+     *
      * @param string $type
      * @param int $offset
      * @param int $limit
@@ -125,6 +127,7 @@ class Material extends Base
 
     /**
      * 获取永久素材总数
+     *
      * @return array
      * @throws Exception
      */
@@ -141,6 +144,7 @@ class Material extends Base
 
     /**
      * 获取永久素材的详情, 如果是图片素材将返回其内容
+     *
      * @param int $mediaId
      * @return string|null
      * @throws Exception
@@ -161,6 +165,7 @@ class Material extends Base
 
     /**
      * 上传永久素材
+     *
      * @param MediaFile $file
      * @param string $type
      * @return array|mixed
@@ -189,6 +194,7 @@ class Material extends Base
 
     /**
      * 删除永久素材
+     *
      * @param int $mediaId
      * @return array
      * @throws Exception
@@ -208,6 +214,7 @@ class Material extends Base
 
     /**
      * 上传图文素材中的图片
+     *
      * @param array $file
      * @return array|mixed
      * @throws Exception
@@ -283,6 +290,7 @@ class Material extends Base
 
     /**
      * 新增图文永久素材文章
+     *
      * @param array $content
      * @param array $file
      * @return array|mixed

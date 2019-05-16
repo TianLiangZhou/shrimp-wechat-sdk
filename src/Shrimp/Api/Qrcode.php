@@ -9,6 +9,7 @@ class Qrcode extends Base
 
     /**
      * 创建一个二维码
+     *
      * @param string|int $content
      * @param int $expire 过期时间以分为单位
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1443433542
@@ -48,6 +49,7 @@ class Qrcode extends Base
 
     /**
      * 生成短连接
+     *
      * @param $url
      * @return array|mixed
      * @throws Exception

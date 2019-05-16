@@ -9,6 +9,7 @@ class Datacube extends Base
 
     /**
      * 获取用户增减数据
+     *
      * @param string $begin 开始时间
      * @param string $end 结束时间
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141082
@@ -28,6 +29,7 @@ class Datacube extends Base
 
     /**
      * 获取用户累计数据
+     *
      * @param string $begin 开始时间
      * @param string $end 结束时间
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141082
@@ -47,6 +49,7 @@ class Datacube extends Base
 
     /**
      * 获取图文群发每日数据
+     *
      * @param string $begin
      * @param string $end
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
@@ -66,6 +69,7 @@ class Datacube extends Base
 
     /**
      * 获取图文群发总数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
      * @param string $begin
      * @param string $end
@@ -85,6 +89,7 @@ class Datacube extends Base
 
     /**
      * 获取图文统计数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
      * @param string $begin
      * @param string $end
@@ -104,6 +109,7 @@ class Datacube extends Base
 
     /**
      * 获取图文统计分时数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
      * @param string $begin
      * @param string $end
@@ -123,6 +129,7 @@ class Datacube extends Base
 
     /**
      * 获取图文分享转发数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
      * @param string $begin
      * @param string $end
@@ -142,6 +149,7 @@ class Datacube extends Base
 
     /**
      * 获取图文分享转发分时数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
      * @param string $begin
      * @param string $end
@@ -161,6 +169,7 @@ class Datacube extends Base
 
     /**
      * 获取消息发送概况数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
      * @param string $begin
      * @param string $end
@@ -180,6 +189,7 @@ class Datacube extends Base
 
     /**
      * 获取消息分送分时数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
      * @param $begin
      * @param $end
@@ -199,6 +209,7 @@ class Datacube extends Base
 
     /**
      * 获取消息发送周数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
      * @param string $begin
      * @param $end
@@ -218,6 +229,7 @@ class Datacube extends Base
 
     /**
      * 获取消息发送月数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
      * @param string $begin
      * @param $end
@@ -237,6 +249,7 @@ class Datacube extends Base
 
     /**
      * 获取消息发送分布数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
      * @param string $begin
      * @param $end
@@ -256,6 +269,7 @@ class Datacube extends Base
 
     /**
      * 获取消息发送分布周数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
      * @param string $begin
      * @param $end
@@ -275,6 +289,7 @@ class Datacube extends Base
 
     /**
      * 获取消息发送分布月数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
      * @param string $begin
      * @param $end
@@ -294,6 +309,7 @@ class Datacube extends Base
 
     /**
      * 获取接口分析数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141086
      * @param string $begin
      * @param $end
@@ -313,6 +329,7 @@ class Datacube extends Base
 
     /**
      * 获取接口分析分时数据
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141086
      * @param string $begin
      * @param string $end

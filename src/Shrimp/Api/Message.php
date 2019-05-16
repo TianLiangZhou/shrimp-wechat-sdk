@@ -35,6 +35,7 @@ class Message extends Base
 
     /**
      * 根据tag群发消息
+     *
      * @param $content
      * @param $type
      * @param int $tagId
@@ -69,6 +70,7 @@ class Message extends Base
 
     /**
      * 通过openId群发
+     *
      * @param array $openId
      * @param $content
      * @param $type
@@ -100,6 +102,7 @@ class Message extends Base
 
     /**
      * 获取群发信息状态
+     *
      * @param $mid
      * @return array|mixed
      * @throws \Exception
@@ -119,6 +122,7 @@ class Message extends Base
 
     /**
      * 删除群发消息
+     *
      * @param $mid
      * @param int $aid 要删除的文章在图文消息中的位置，第一篇编号为1，该字段不填或填0会删除全部文章
      * @return array|mixed
@@ -139,6 +143,7 @@ class Message extends Base
 
     /**
      * 设置群发速度
+     *
      * @param $speed
      * @return array|mixed
      * @throws \Exception

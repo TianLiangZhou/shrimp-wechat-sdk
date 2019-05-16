@@ -12,6 +12,8 @@ use Exception;
 class Menu extends Base
 {
     /**
+     * 创建菜单
+     *
      * @param array $data
      * @return bool
      * @throws Exception
@@ -34,6 +36,8 @@ class Menu extends Base
     }
 
     /**
+     * 查询菜单
+     *
      * @return mixed
      * @throws Exception
      */
@@ -49,6 +53,8 @@ class Menu extends Base
     }
 
     /**
+     * 删除菜单
+     *
      * @return bool
      * @throws Exception
      */

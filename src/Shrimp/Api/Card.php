@@ -13,6 +13,8 @@ class Card extends Base
     const CARD_TYPE_GENERAL_COUPON = "GENERAL_COUPON";
 
     /**
+     * 创建卡片
+     *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1451025056
      * @param string $type
      * @param array $baseInfo
@@ -20,7 +22,6 @@ class Card extends Base
      * @param array $advanceInfo
      * @return array|mixed
      * @throws Exception
-     * @throws \HttpRequestException
      */
     public function create($type, array $baseInfo, $exclusive, array $advanceInfo = [])
     {
@@ -57,7 +58,7 @@ class Card extends Base
         ];
         try {
             $response = $this->sdk->http($uri, $data, 'POST', 'json');
-        } catch (\HttpRequestException $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->sdk->returnResponseHandler($response);

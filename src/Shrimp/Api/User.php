@@ -14,8 +14,10 @@ class User extends Base
 {
     /**
      * 创建用户标签
+     *
      * @param string $name
      * @return array
+     * @throws Exception
      */
     public function createLabel($name)
     {
@@ -31,6 +33,7 @@ class User extends Base
 
     /**
      * 获取已创建的标签
+     *
      * @return array|mixed
      * @throws Exception
      */
@@ -47,6 +50,7 @@ class User extends Base
 
     /**
      * 更新标签
+     *
      * @param $id
      * @param $name
      * @return array|mixed
@@ -71,6 +75,7 @@ class User extends Base
 
     /**
      * 删除标签
+     *
      * @param $id
      * @return array|mixed
      * @throws Exception
@@ -93,6 +98,7 @@ class User extends Base
 
     /**
      * 获取标签下的粉丝列表
+     *
      * @param $id
      * @param null $openId
      * @return array|mixed
@@ -116,6 +122,7 @@ class User extends Base
 
     /**
      * 批量给用户打上标签
+     *
      * @param array $openId
      * @param $id
      * @return array|mixed
@@ -139,6 +146,7 @@ class User extends Base
 
     /**
      * 批量取消用户标签
+     *
      * @param array $openId
      * @param $id
      * @return array|mixed
@@ -162,6 +170,7 @@ class User extends Base
 
     /**
      * 获取用户的标签列表
+     *
      * @param $openId
      * @return array|mixed
      * @throws Exception
@@ -184,6 +193,7 @@ class User extends Base
 
     /**
      * 获取用户列表
+     *
      * @param null $nextOpenId
      * @return array|mixed
      * @throws Exception
@@ -201,6 +211,7 @@ class User extends Base
 
     /**
      * 获取用户信息基本信息
+     *
      * @param $openId
      * @param string $lang
      * @return array|mixed
@@ -219,6 +230,7 @@ class User extends Base
 
     /**
      * 批量获取用户信息
+     *
      * @param array $openId
      * @param string $lang
      * @return array|mixed
@@ -242,6 +254,7 @@ class User extends Base
 
     /**
      * 设置用户的备注名
+     *
      * @param $openId
      * @param $mark
      * @return array|mixed
@@ -260,8 +273,10 @@ class User extends Base
 
     /**
      * 获取黑名单
-     * @param string $openId 上个openid
+     *
+     * @param string $nextOpenId 上个openid
      * @return array
+     * @throws Exception
      */
     public function backList($nextOpenId = '')
     {
@@ -271,6 +286,6 @@ class User extends Base
         } catch (Exception $e) {
             throw $e;
         }
-        return $this->returnResponseHandler($response);
+        return $this->sdk->returnResponseHandler($response);
     }
 }
