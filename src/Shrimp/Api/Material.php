@@ -8,8 +8,8 @@ namespace Shrimp\Api;
  * Time: 16:57
  */
 use Exception;
-use Shrimp\File;
-use Shrimp\MediaFile;
+use Shrimp\File\File;
+use Shrimp\File\MediaFile;
 
 class Material extends Base
 {

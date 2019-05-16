@@ -12,8 +12,15 @@
     	}
     ],
     "require": {
-        "php": ">=7.0",
-        "symfony/event-dispatcher": "^3.2"
+        "php": "~7.2",
+        "symfony/event-dispatcher": "^4.2",
+        "ext-libxml": "*",
+        "ext-simplexml": "*",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-dom": "*",
+        "ext-fileinfo": "*"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.5",

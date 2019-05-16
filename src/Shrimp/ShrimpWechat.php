@@ -8,6 +8,7 @@
 
 namespace Shrimp;
 
+use Closure;
 use CURLFile;
 use Exception;
 use ReflectionClass;
@@ -17,7 +18,8 @@ use Shrimp\Api\Datacube;
 use Shrimp\Api\Material;
 use Shrimp\Api\Menu;
 use Shrimp\Api\Message;
-use Shrimp\Message\Type;
+use Shrimp\Event\ResponseEvent;
+use Shrimp\Message\Event;
 use Shrimp\Api\Qrcode;
 use Shrimp\Api\User;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -72,12 +74,12 @@ class ShrimpWechat
     private static $dispatcher = null;
 
     /**
-     * @var null|\Closure
+     * @var null|Closure
      */
     private $writeAccessTokenCallable = null;
 
     /**
-     * @var null|\Closure
+     * @var null|Closure
      */
     private $readAccessTokenCallable = null;
 
@@ -97,28 +99,41 @@ class ShrimpWechat
         $this->secret = $secret;
         $this->defaultCacheDir = $cacheDir;
         if ($bindAccessTokenCallable) {
-            $this->registerWriteAccessTokenCallback(function($accessToken, $expire) {
-                if (!is_writable(__DIR__)) {
-                    throw new RuntimeException(sprintf("Directory is not writable '%s'", __DIR__ ));
-                }
-                $filename = __DIR__ . DIRECTORY_SEPARATOR . 'shrimp.access_token.php';
-
-                file_put_contents($filename, serialize([$accessToken, $expire, time()]));
-                return true;
-            });
-            $this->registerReadAccessTokenCallback(function() {
-                $filename = __DIR__ . DIRECTORY_SEPARATOR . 'shrimp.access_token.php';
-                if (file_exists($filename)) {
-                    list($accessToken, $expire, $time) = unserialize(file_get_contents($filename));
-                    if (time() > $time + $expire) {
-                        return null;
-                    }
-                    return $accessToken;
-                }
-                return null;
-            });
+            $this->registerWriteAccessTokenCallback(Closure::fromCallable([$this, 'defaultAccessTokenWriteCallback']));
+            $this->registerReadAccessTokenCallback(Closure::fromCallable([$this, 'defaultAccessTokenReadCallback']));
         }
         self::$dispatcher = new EventDispatcher();
+    }
+
+    /**
+     * @param string $accessToken
+     * @param int $expire
+     * @return bool
+     */
+    private function defaultAccessTokenWriteCallback(string $accessToken, int $expire)
+    {
+        if (!is_writable($this->defaultCacheDir)) {
+            throw new RuntimeException(sprintf("Directory is not writable '%s'", __DIR__ ));
+        }
+        $filename = $this->defaultCacheDir . DIRECTORY_SEPARATOR . 'shrimp.access_token.php';
+        file_put_contents($filename, serialize([$accessToken, $expire, time()]));
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    private function defaultAccessTokenReadCallback()
+    {
+        $filename = $this->defaultCacheDir . DIRECTORY_SEPARATOR . 'shrimp.access_token.php';
+        if (file_exists($filename)) {
+            list($accessToken, $expire, $time) = unserialize(file_get_contents($filename));
+            if (time() > $time + $expire) {
+                return null;
+            }
+            return $accessToken;
+        }
+        return null;
     }
 
     /**
@@ -158,11 +173,11 @@ class ShrimpWechat
         } catch (Exception $e) {
             throw $e;
         }
-        $callable = $this->writeAccessTokenCallable
-            ? $this->writeAccessTokenCallable
-            : [$this, 'setAccessToken'];
-
-        call_user_func($callable, $response['access_token'], $response['expires_in']);
+        call_user_func(
+            $this->writeAccessTokenCallable ?? Closure::fromCallable([$this, 'setAccessToken']),
+            $response['access_token'],
+            $response['expires_in']
+        );
         return $this;
     }
 
@@ -184,13 +199,15 @@ class ShrimpWechat
      * @param $name
      * @param $listener
      * @param int $priority
+     * @return ShrimpWechat
      */
-    public function bind($listener, $name = Type::TEXT, $priority = 0)
+    public function bind($listener, $name = Event::TEXT, $priority = 0)
     {
         if (!is_callable($listener)) {
             throw new \InvalidArgumentException("$listener is not a Closure or invokable object.");
         }
         self::$dispatcher->addListener($name, $listener, $priority);
+        return $this;
     }
 
     /**
@@ -227,7 +244,7 @@ class ShrimpWechat
      */
     public function send()
     {
-        $xmlMessage = $this->messageToXml($this->getCurrentStream());
+        $xmlMessage = Support\Xml::simpleXmlElement($this->getCurrentStream());
         if (empty($xmlMessage)) {
             return 'success';
         }
@@ -236,10 +253,10 @@ class ShrimpWechat
         }
         $type = (string) $xmlMessage->MsgType;
         $name = $type;
-        if ($type === Type::EVENT) {
-            $name = (string) $xmlMessage->Event;
+        if ($type === Event::EVENT) {
+            $name = Event::EVENT . '.' . (string) $xmlMessage->Event;
         }
-        $event = new GetResponseEvent($xmlMessage);
+        $event = new ResponseEvent($xmlMessage);
         self::$dispatcher->dispatch($name, $event);
         if ($event->hasResponse()) {
             return (string) $event->getResponse();
@@ -252,32 +269,10 @@ class ShrimpWechat
      */
     private function getCurrentStream()
     {
-        if (php_sapi_name() === 'cli') {
-            $fd = STDIN;
-        } else {
-            $fd = fopen('php://input', 'r');
-        }
+        $fd = php_sapi_name() === 'cli' ? STDIN : fopen('php://input', 'r');
         $stream = stream_get_contents($fd);
         fclose($fd);
         return $stream;
-    }
-
-    /**
-     * @param $input
-     * @return null|\SimpleXMLElement
-     */
-    private function messageToXml($input)
-    {
-        $backup = libxml_disable_entity_loader(true);
-        $backup_errors = libxml_use_internal_errors(true);
-        $xml = simplexml_load_string($input);
-        libxml_disable_entity_loader($backup);
-        libxml_clear_errors();
-        libxml_use_internal_errors($backup_errors);
-        if ($xml === false) {
-            return null;
-        }
-        return $xml;
     }
 
     /**
@@ -405,7 +400,7 @@ class ShrimpWechat
                     array_walk_recursive($data, [$xml, 'addChild']);
                     $requestData = $xml->asXML();
                 }
-                // no break
+                break;
             case 'form':
                 array_push($header, "multipart/form-data");
                 $requestData = $data ? $data : null;

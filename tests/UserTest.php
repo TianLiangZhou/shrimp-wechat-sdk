@@ -7,12 +7,20 @@
  */
 namespace Shrimp\Test;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Shrimp\ShrimpWechat;
 
 class UserTest extends TestCase
 {
     private $sdk = null;
+
+    /**
+     * UserTest constructor.
+     * @param null $name
+     * @param array $data
+     * @param string $dataName
+     */
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
@@ -21,7 +29,7 @@ class UserTest extends TestCase
 
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testCreateLabel()
     {
@@ -34,7 +42,7 @@ class UserTest extends TestCase
 
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGetLabel()
     {

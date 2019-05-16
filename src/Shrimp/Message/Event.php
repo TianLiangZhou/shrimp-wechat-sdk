@@ -8,7 +8,7 @@
 
 namespace Shrimp\Message;
 
-class Type
+final class Event
 {
     const TEXT = 'text';
     const IMAGE = 'image';
@@ -17,15 +17,17 @@ class Type
     const MUSIC = 'music';
     const LINK  = 'link';
     const NEWS  = 'news';
-    const SHORTVIDEO = 'shortvideo';
+    const SHORT_VIDEO = 'shortvideo';
     const EVENT = 'event';
 
     const LOCATION = 'location'; //可以是事件类型，也可以是消息类型
+
     /**
      * 事件类型
      */
-    const SUBSCRIBE = 'subscribe';
-    const SCAN = 'scan';
-    const CLICK = 'click';
-    const VIEW  = 'view';
+    const EVENT_SUBSCRIBE = self::EVENT . '.subscribe';
+    const EVENT_SCAN = self::EVENT . '.scan';
+    const EVENT_CLICK = self::EVENT . '.click';
+    const EVENT_VIEW  = self::EVENT . '.view';
+    const EVENT_LOCATION = self::EVENT . '.' . self::LOCATION;
 }

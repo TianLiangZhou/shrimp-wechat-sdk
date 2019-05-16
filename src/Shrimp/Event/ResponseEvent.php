@@ -1,21 +1,22 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: zhoutianliang
+ * User: meshell
  * Date: 2018/1/5
  * Time: 11:17
  */
 
-namespace Shrimp;
+namespace Shrimp\Event;
 
 use Shrimp\Response\Response;
 use Shrimp\Response\TextResponse;
+use SimpleXMLElement;
 use Symfony\Component\EventDispatcher\Event;
 
-class GetResponseEvent extends Event
+class ResponseEvent extends Event
 {
     /**
-     * @var null|\SimpleXMLElement
+     * @var null|SimpleXMLElement
      */
     private $xml = null;
 
@@ -26,9 +27,9 @@ class GetResponseEvent extends Event
 
     /**
      * GetResponseEvent constructor.
-     * @param \SimpleXMLElement $xml
+     * @param SimpleXMLElement $xml
      */
-    public function __construct(\SimpleXMLElement $xml)
+    public function __construct(SimpleXMLElement $xml)
     {
         $this->xml = $xml;
     }
@@ -77,7 +78,7 @@ class GetResponseEvent extends Event
     }
 
     /**
-     * @return null|\SimpleXMLElement
+     * @return null|SimpleXMLElement
      */
     public function getMessageSource()
     {
@@ -86,7 +87,7 @@ class GetResponseEvent extends Event
 
     /**
      * @param $name
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function getAttribute($name)
     {

@@ -8,8 +8,9 @@
 
 namespace Shrimp\Test;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
-use Shrimp\MediaFile;
+use Shrimp\File\MediaFile;
 use Shrimp\ShrimpWechat;
 
 class MaterialTest extends TestCase
@@ -31,7 +32,7 @@ class MaterialTest extends TestCase
 
     /**
      * 测试上传图片
-     * @throws \Exception
+     * @throws Exception
      */
     public function testUploadFile()
     {
@@ -48,21 +49,21 @@ class MaterialTest extends TestCase
      *
      * @param array $content
      * @param MediaFile $file
-     * @throws \Exception
+     * @throws Exception
      */
     public function testCreatePictureContent(array $content, MediaFile $file)
     {
         try {
             $result = $this->sdk->material->createPictureContent($content, $file);
             $this->assertArrayHasKey('media_id', $result);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
 
     /**
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function createPictureContentProvider()
     {

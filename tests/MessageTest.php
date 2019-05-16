@@ -8,6 +8,7 @@
 
 namespace Shrimp\Test;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Shrimp\Api\Message;
 use Shrimp\ShrimpWechat;
@@ -15,6 +16,13 @@ use Shrimp\ShrimpWechat;
 class MessageTest extends TestCase
 {
     private $sdk = null;
+
+    /**
+     * MessageTest constructor.
+     * @param null $name
+     * @param array $data
+     * @param string $dataName
+     */
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
@@ -26,14 +34,14 @@ class MessageTest extends TestCase
      * @dataProvider massForTagProvider
      *
      * @param $mediaId
-     * @throws \Exception
+     * @throws Exception
      */
     public function testMassForTag($mediaId)
     {
         try {
             $result = $this->sdk->message->massForTag($mediaId, Message::TYPE_NEWS);
             $this->assertArrayHasKey('msg_id', $result);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertContains("no permission for this msgtype hint", $e->getMessage());
         }
     }

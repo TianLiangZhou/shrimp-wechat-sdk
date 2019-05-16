@@ -8,12 +8,20 @@
 
 namespace Shrimp\Test;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Shrimp\ShrimpWechat;
 
 class MenuTest extends TestCase
 {
     private $sdk = null;
+
+    /**
+     * MenuTest constructor.
+     * @param null $name
+     * @param array $data
+     * @param string $dataName
+     */
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
@@ -22,7 +30,6 @@ class MenuTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws \Exception
      */
     public function testMenuQuery()
     {
