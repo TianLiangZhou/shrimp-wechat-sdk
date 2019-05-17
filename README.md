@@ -16,78 +16,142 @@ composer require meshell/shrimp-wechat-sdk
 
 #### Usage
 
-基本接口的使用
+所有`api`的返回结果，都使用微信官方结果为标准。具体可以查看<https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1445241432>
+
+##### 创建菜单
 
 ```php
 <?php
 
-$sdk  = new \Shrimp\ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+use Shrimp\ShrimpWechat;
+
+$sdk  = new ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
 try {
-    //直接使用方法名
-    $array = $sdk->createMenu(["type" => "click", "name" => "测试三", "key"  => "V1001_TODAY_VIEW"]);
-    //使用模块名, 建议使用这种方式
     $array = $sdk->menu->createMenu(["type" => "click", "name" => "测试三", "key"  => "V1001_TODAY_VIEW"]);
-    
 } catch(Exception $e) {
     throw $e;
 }
 
-//返回
+```
 
-Array
-(
-    [errcode] => 0
-    [errmsg] => ok
-)
+##### 上传图片
 
+```php
+<?php
 
+use Shrimp\ShrimpWechat;
+use Shrimp\File\MediaFile;
+
+$sdk  = new ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+try {
+    $file = $sdk->material->uploadPermanentMaterial(new MediaFile(dirname(__DIR__) . '/content-image.png'));
+} catch(Exception $e) {
+    throw $e;
+}
 
 ```
 
+
 #### 自动回复
+
+自动回复目前支持，文本，语音，视频，图片，图文类型。
+
+- 文本消息
 
 ```php
 
 <?php
 
-$sdk  = new \Shrimp\ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Shrimp\Message\Event;
+use Shrimp\ShrimpWechat;
+use Shrimp\Event\ResponseEvent;
 
-$sdk->bind(function(\Shrimp\Event\ResponseEvent $response) {
-    $response->setResponse("Hello world"); //回给用户Hello world
-}); //默认绑定text消息
-
-echo $sdk->send();
-
-
-//判断消息是不是等于activity, 等于就返回新闻消息
-$sdk->bind(function(\Shrimp\Event\ResponseEvent  $response) use ($sdk) {
-    $text = (string) $response->getAttribute('Content');
-    if ($text === 'activity') {
-        $response->setResponse([
-            'type' => \Shrimp\Message\Event::NEWS,
-            'content' => [
-                'title' => '抽奖活动',
-                'pic_url'   => 'http://activity.example/images/activity.jpg',
-                'url'   => 'http://activity.example.com/888',
-                'description' => 'test'
-            ],
-        ]);
-    } else if ($text === 'code') { //等于code 就回复一个图片给用户
-        $file = $sdk->material->uploadPermanentMaterial(new \Shrimp\File\MediaFile(dirname(__DIR__) . '/content-image.png'));
-        $response->setResponse(
-            new \Shrimp\Response\ImageResponse($response->getMessageSource(), $file['media_id'])
-        );
-        // or 
-        $response->setResponse([
-            'type' => \Shrimp\Message\Event::IMAGE, 'content' => $file['media_id']
-        ]);
+class TestController implements EventSubscriberInterface
+{
+    static $test = null;
+    
+    /**
+     * @var null | ShrimpWechat 
+     */
+    public $shrimp = null;
+    
+    public function __construct() 
+    {
         
+        self::$test = $this;
+        
+        $this->shrimp  = new ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+        
+        $this->shrimp->getDispatcher()->addSubscriber(self::$test);
     }
-}, \Shrimp\Message\Event::TEXT);
+    
+    /**
+     * 自动回复
+     * 
+     * @return string
+     */
+    public function auto()
+    {
+        return $this->shrimp->send();
+    }
+    
+    private function autoRespond(ResponseEvent $responseEvent)
+    {
+        $responseEvent->setResponse("hello world");
+    }
+    
+    public static function getSubscribedEvents()
+    {
+        // TODO: Implement getSubscribedEvents() method.
 
-echo $sdk->send();
+        return [
+            Event::TEXT => Closure::fromCallable([self::$test, 'autoRespond']),
+        ];
+    }
+}
+
+(new TestController())->auto();
+
+// 输出标准的XML
 
 ```
+
+- 回复图片
+
+```php
+<?php
+
+...
+    function (\Shrimp\Event\ResponseEvent $responseEvent) {
+        $mediaId = 123;
+        $responseEvent->setResponse(
+            new \Shrimp\Response\ImageResponse(
+                $responseEvent->getMessageSource(), $mediaId
+            )
+        );
+    }
+...
+
+```
+
+- 订阅关注
+
+```php
+<?php
+    ...
+    public static function getSubscribedEvents()
+    {
+        // TODO: Implement getSubscribedEvents() method.
+
+        return [
+            Event::EVENT_SUBSCRIBE => Closure::fromCallable([self::$test, 'autoSubscribeRespond']),
+        ];
+    }
+    ...
+
+```
+
 
 #### License
 

@@ -29,8 +29,8 @@
         "php-coveralls/php-coveralls": "^2.0"
     },
     "autoload": {
-    	"psr-0": {
-    		"Shrimp": "src/"
+    	"psr-4": {
+    		"Shrimp\\": "src/"
     	}
     },
     "scripts": {
