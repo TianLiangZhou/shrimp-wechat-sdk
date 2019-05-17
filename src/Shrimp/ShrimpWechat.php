@@ -106,6 +106,16 @@ class ShrimpWechat
     }
 
     /**
+     * 获取事件调度器
+     *
+     * @return EventDispatcher|null
+     */
+    public function getDispatcher(): ?EventDispatcher
+    {
+        return self::$dispatcher;
+    }
+
+    /**
      * @param string $accessToken
      * @param int $expire
      * @return bool

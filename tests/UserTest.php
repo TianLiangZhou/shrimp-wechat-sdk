@@ -30,23 +30,25 @@ class UserTest extends TestCase
 
     /**
      * @throws Exception
+     * @expectedException Exception
      */
     public function testCreateLabel()
     {
         $name = "Test" . range('a', 'z')[mt_rand(0, 25)] . mt_rand(1, 100);
         $label = $this->sdk->user->createLabel($name);
-        $this->assertArrayHasKey('tag', $label);
+        self::assertArrayHasKey('tag', $label);
         $name = "Update" . range('a', 'z')[mt_rand(0, 25)] . mt_rand(1, 100);
-        $this->assertArrayHasKey('errcode', $this->sdk->user->updateLabel($label['tag']['id'], $name));
+        self::assertArrayHasKey('errcode', $this->sdk->user->updateLabel($label['tag']['id'], $name));
     }
 
 
     /**
      * @throws Exception
+     * @expectedException Exception
      */
     public function testGetLabel()
     {
         $tags = $this->sdk->user->getLabel();
-        $this->assertArrayHasKey('tags', $tags);
+        self::assertArrayHasKey('tags', $tags);
     }
 }

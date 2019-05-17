@@ -30,10 +30,11 @@ class MenuTest extends TestCase
 
     /**
      * @throws Exception
+     * @expectedException Exception
      */
     public function testMenuQuery()
     {
         $menu = $this->sdk->menu->menuQuery();
-        $this->assertArrayHasKey('menu', $menu);
+        self::assertArrayHasKey('menu', $menu);
     }
 }

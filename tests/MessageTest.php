@@ -35,15 +35,12 @@ class MessageTest extends TestCase
      *
      * @param $mediaId
      * @throws Exception
+     * @expectedException Exception
      */
     public function testMassForTag($mediaId)
     {
-        try {
-            $result = $this->sdk->message->massForTag($mediaId, Message::TYPE_NEWS);
-            $this->assertArrayHasKey('msg_id', $result);
-        } catch (Exception $e) {
-            $this->assertContains("no permission for this msgtype hint", $e->getMessage());
-        }
+        $result = $this->sdk->message->massForTag($mediaId, Message::TYPE_NEWS);
+        self::assertArrayHasKey('msg_id', $result);
     }
 
     /**

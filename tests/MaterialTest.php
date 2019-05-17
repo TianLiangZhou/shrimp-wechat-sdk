@@ -32,16 +32,15 @@ class MaterialTest extends TestCase
 
     /**
      * 测试上传图片
+     *
      * @throws Exception
+     * @expectedException Exception
      */
     public function testUploadFile()
     {
-        try {
-            $file = new MediaFile(dirname(__DIR__) . '/example.png');
-            $result = $this->sdk->material->uploadMaterialImage($file);
-            $this->assertCount(1, $result);
-        } catch (\Exception $e) {
-        }
+        $file = new MediaFile(dirname(__DIR__) . '/example.png');
+        $result = $this->sdk->material->uploadMaterialImage($file);
+        self::assertCount(1, $result);
     }
 
     /**
@@ -50,14 +49,12 @@ class MaterialTest extends TestCase
      * @param array $content
      * @param MediaFile $file
      * @throws Exception
+     * @expectedException Exception
      */
     public function testCreatePictureContent(array $content, MediaFile $file)
     {
-        try {
-            $result = $this->sdk->material->createPictureContent($content, $file);
-            $this->assertArrayHasKey('media_id', $result);
-        } catch (Exception $e) {
-        }
+        $result = $this->sdk->material->createPictureContent($content, $file);
+        self::assertArrayHasKey('media_id', $result);
     }
 
 
