@@ -69,8 +69,6 @@ use Shrimp\Event\ResponseEvent;
 
 class TestController implements EventSubscriberInterface
 {
-    static $test = null;
-    
     /**
      * @var null | ShrimpWechat 
      */
@@ -79,11 +77,9 @@ class TestController implements EventSubscriberInterface
     public function __construct() 
     {
         
-        self::$test = $this;
-        
         $this->shrimp  = new ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
         
-        $this->shrimp->getDispatcher()->addSubscriber(self::$test);
+        $this->shrimp->getDispatcher()->addSubscriber($this);
     }
     
     /**
@@ -106,7 +102,7 @@ class TestController implements EventSubscriberInterface
         // TODO: Implement getSubscribedEvents() method.
 
         return [
-            Event::TEXT => Closure::fromCallable([self::$test, 'autoRespond']),
+            Event::TEXT => 'autoRespond',
         ];
     }
 }
@@ -145,7 +141,7 @@ class TestController implements EventSubscriberInterface
         // TODO: Implement getSubscribedEvents() method.
 
         return [
-            Event::EVENT_SUBSCRIBE => Closure::fromCallable([self::$test, 'autoSubscribeRespond']),
+            Event::EVENT_SUBSCRIBE => 'autoSubscribeRespond',
         ];
     }
     ...
