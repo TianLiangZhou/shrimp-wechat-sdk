@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shrimp\Api;
 
 use Exception;
@@ -22,10 +24,11 @@ class Card extends Base
      * @param array $advanceInfo
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function create($type, array $baseInfo, $exclusive, array $advanceInfo = [])
+    public function create(string $type, array $baseInfo, $exclusive, array $advanceInfo = [])
     {
-        $uri = $this->format('create');
+        $uri = $this->format('card/create');
         $property = [
             'base_info' => $baseInfo,
             'advanced_info' => $advanceInfo,
@@ -40,7 +43,7 @@ class Card extends Base
                 $property['reduce_cost']= $exclusive['reduce_cost'];
                 break;
             case static::CARD_TYPE_DISCOUNT:
-                $property['discount'] = (int)$exclusive;
+                $property['discount'] = (int) $exclusive;
                 break;
             case static::CARD_TYPE_GIFT:
                 $property['gift'] = $exclusive;
@@ -57,7 +60,7 @@ class Card extends Base
              ]
         ];
         try {
-            $response = $this->sdk->http($uri, $data, 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => $data]);
         } catch (Exception $e) {
             throw $e;
         }

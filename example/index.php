@@ -5,9 +5,9 @@ use Shrimp\ShrimpWechat;
 
 header("Content-Type:text/xml");
 
-include dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+include __DIR__ . '/../vendor/autoload.php';
 
-$sdk  = new ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+$sdk  = new ShrimpWechat('wxed1cc1b0e241ff74', '434ca4dfc791853b9ef36ebf24a3ce02');
 
 
 $sdk->bind(function (ResponseEvent $response) {

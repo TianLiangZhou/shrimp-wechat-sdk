@@ -6,20 +6,17 @@
  * Time: 11:17
  */
 
+declare(strict_types=1);
+
 namespace Shrimp\Event;
 
 use Shrimp\Response\Response;
 use Shrimp\Response\TextResponse;
 use SimpleXMLElement;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
-class ResponseEvent extends Event
+class ResponseEvent extends GenericEvent
 {
-    /**
-     * @var null|SimpleXMLElement
-     */
-    private $xml = null;
-
     /**
      * @var null|Response
      */
@@ -31,7 +28,7 @@ class ResponseEvent extends Event
      */
     public function __construct(SimpleXMLElement $xml)
     {
-        $this->xml = $xml;
+        parent::__construct($xml, []);
     }
 
     /**
@@ -61,11 +58,11 @@ class ResponseEvent extends Event
             }
             $class = '\\Shrimp\\Response\\' . ucfirst($type) . 'Response';
             if (class_exists($class)) {
-                $this->response = new $class($this->xml, $content);
+                $this->response = new $class($this->subject, $content);
             }
         }
         if (is_string($response)) {
-            $this->response = new TextResponse($this->xml, $response);
+            $this->response = new TextResponse($this->subject, $response);
         }
     }
 
@@ -82,7 +79,7 @@ class ResponseEvent extends Event
      */
     public function getMessageSource()
     {
-        return $this->xml;
+        return $this->subject;
     }
 
     /**
@@ -91,6 +88,6 @@ class ResponseEvent extends Event
      */
     public function getAttribute($name)
     {
-        return $this->xml->$name;
+        return $this->subject->$name;
     }
 }

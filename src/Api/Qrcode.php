@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shrimp\Api;
 
 use Exception;
@@ -38,9 +40,9 @@ class Qrcode extends Base
             $name = 'QR_LIMIT_' . $name;
         }
         $data['action_name'] = $name;
-        $uri = $this->format('create');
+        $uri = $this->format('cgi-bin/qrcode/create');
         try {
-            $response = $this->sdk->http($uri, $data, 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => $data]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -53,17 +55,18 @@ class Qrcode extends Base
      * @param $url
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1443433600
      */
     public function shortUrl($url)
     {
-        $uri = $this->format('shorturl', false);
+        $uri = $this->format('cgi-bin/shorturl');
         $data = [
             'action' => 'long2short',
             'long_url' => $url
         ];
         try {
-            $response = $this->sdk->http($uri, $data, 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => $data]);
         } catch (Exception $e) {
             throw $e;
         }

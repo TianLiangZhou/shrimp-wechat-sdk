@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Shrimp\Support;
-
 
 use Countable;
 use Iterator;
@@ -80,7 +80,7 @@ class Collection implements Iterator, Countable
     public function valid()
     {
         // TODO: Implement valid() method.
-        return isset($this->files[$this->position]);
+        return isset($this->sets[$this->position]);
     }
 
     /**

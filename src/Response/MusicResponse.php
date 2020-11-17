@@ -5,6 +5,7 @@
  * Date: 2017/5/6
  * Time: 11:35
  */
+declare(strict_types=1);
 
 namespace Shrimp\Response;
 

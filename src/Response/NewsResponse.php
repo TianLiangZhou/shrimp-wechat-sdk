@@ -6,6 +6,8 @@
  * Time: 11:42
  */
 
+declare(strict_types=1);
+
 namespace Shrimp\Response;
 
 class NewsResponse extends Response

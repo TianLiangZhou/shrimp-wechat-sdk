@@ -5,19 +5,25 @@
  * Date: 2017/5/3
  * Time: 16:57
  */
+declare(strict_types=1);
 
 namespace Shrimp;
 
 use Closure;
 use CURLFile;
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Client\ClientInterface;
 use ReflectionClass;
 use RuntimeException;
 use Shrimp\Api\Card;
+use Shrimp\Api\CustomService;
 use Shrimp\Api\Datacube;
 use Shrimp\Api\Material;
 use Shrimp\Api\Menu;
 use Shrimp\Api\Message;
+use Shrimp\Api\Template;
 use Shrimp\Event\ResponseEvent;
 use Shrimp\Message\Event;
 use Shrimp\Api\Qrcode;
@@ -32,33 +38,37 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * @property Card $card
  * @property Qrcode $qrcode
  * @property Datacube $datacube
+ * @property CustomService $service
+ * @property Template $template
  * Class ShrimpWechat
  * @package Shrimp
  */
 class ShrimpWechat
 {
+    const VERSION = 'v2.0.0';
+
     /**
      * @var string
      */
-    private $gateway = 'https://api.weixin.qq.com/cgi-bin/';
+    private $gateway = 'https://api.weixin.qq.com/';
     /**
      * @var string
      */
-    private $appId = '';
+    private $appId;
     /**
      * @var string
      */
-    private $secret = '';
+    private $secret;
 
     /**
      * @var int
      */
-    private $timeout = 15;
+    private $timeout = 3;
 
     /**
      * @var string
      */
-    private $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36';
+    private $userAgent = 'shrimp-wechat-sdk ' . self::VERSION;
 
 
     private $accessToken = null;
@@ -86,23 +96,33 @@ class ShrimpWechat
     /**
      * @var string
      */
-    private $defaultCacheDir = __DIR__;
+    private $defaultCacheDir;
+
+    /**
+     * @var ClientInterface|\GuzzleHttp\ClientInterface
+     */
+    private $client;
 
     /**
      * ShrimpWechat constructor.
-     * @param $appId
-     * @param $secret
+     * @param string $appId
+     * @param string $secret
+     * @param array $options
      */
-    public function __construct($appId, $secret, $bindAccessTokenCallable = true, $cacheDir = __DIR__)
+    public function __construct(string $appId, string $secret, array $options = [])
     {
         $this->appId = $appId;
         $this->secret = $secret;
-        $this->defaultCacheDir = $cacheDir;
-        if ($bindAccessTokenCallable) {
-            $this->registerWriteAccessTokenCallback(Closure::fromCallable([$this, 'defaultAccessTokenWriteCallback']));
-            $this->registerReadAccessTokenCallback(Closure::fromCallable([$this, 'defaultAccessTokenReadCallback']));
+        if (empty($options['cacheDir'])) {
+            $this->defaultCacheDir = __DIR__ . '/../';
         }
         self::$dispatcher = new EventDispatcher();
+        if (empty($options['client'])) {
+            $options['client'] = new Client($options['config'] ?? []);
+        }
+        $this->setClient($options['client']);
+        $this->registerWriteAccessTokenCallback(Closure::fromCallable([$this, 'defaultAccessTokenWriteCallback']));
+        $this->registerReadAccessTokenCallback(Closure::fromCallable([$this, 'defaultAccessTokenReadCallback']));
     }
 
     /**
@@ -116,6 +136,14 @@ class ShrimpWechat
     }
 
     /**
+     * @param ClientInterface $client
+     */
+    public function setClient(ClientInterface $client): void
+    {
+        $this->client = $client;
+    }
+
+    /**
      * @param string $accessToken
      * @param int $expire
      * @return bool
@@ -123,9 +151,9 @@ class ShrimpWechat
     private function defaultAccessTokenWriteCallback(string $accessToken, int $expire)
     {
         if (!is_writable($this->defaultCacheDir)) {
-            throw new RuntimeException(sprintf("Directory is not writable '%s'", __DIR__ ));
+            throw new RuntimeException(sprintf("Directory is not writable '%s'", realpath(__DIR__ . '/../../')));
         }
-        $filename = $this->defaultCacheDir . DIRECTORY_SEPARATOR . 'shrimp.access_token.php';
+        $filename = $this->defaultCacheDir . DIRECTORY_SEPARATOR . '.shrimp.cache';
         file_put_contents($filename, serialize([$accessToken, $expire, time()]));
         return true;
     }
@@ -135,7 +163,7 @@ class ShrimpWechat
      */
     private function defaultAccessTokenReadCallback()
     {
-        $filename = $this->defaultCacheDir . DIRECTORY_SEPARATOR . 'shrimp.access_token.php';
+        $filename = $this->defaultCacheDir . DIRECTORY_SEPARATOR . '.shrimp.cache';
         if (file_exists($filename)) {
             list($accessToken, $expire, $time) = unserialize(file_get_contents($filename));
             if (time() > $time + $expire) {
@@ -167,19 +195,21 @@ class ShrimpWechat
     }
 
     /**
+     * @see https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Get_access_token.html
      * @return $this
      * @throws \Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
     public function requestAccessToken()
     {
-        $uri = $this->gateway  . 'token';
+        $uri = $this->gateway  . 'cgi-bin/token';
         $data = [
             'grant_type' => 'client_credential',
             'appid' => $this->appId,
             'secret'=> $this->secret,
         ];
         try {
-            $response = $this->returnResponseHandler($this->http($uri, $data));
+            $response = $this->returnResponseHandler($this->http($uri, 'GET', ['query' => $data]));
         } catch (Exception $e) {
             throw $e;
         }
@@ -193,16 +223,36 @@ class ShrimpWechat
 
 
     /**
+     * @see https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Get_the_WeChat_server_IP_address.html
      * @return mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
     public function getCallbackIp()
     {
-        if (empty($this->accessToken)) {
+        if (empty($this->getAccessToken())) {
             throw new Exception('AccessToken is empty');
         }
-        $uri = $this->gateway . 'getcallbackip?access_token=' . $this->accessToken;
+        $uri = $this->gateway . 'cgi-bin/getcallbackip?access_token=' . $this->accessToken;
         return $this->returnResponseHandler($this->http($uri));
+    }
+
+    /**
+     * 清理调用次数
+     *
+     * @return array|mixed
+     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @throws Exception
+     */
+    public function clearQuota()
+    {
+        if (empty($this->getAccessToken())) {
+            throw new Exception('AccessToken is empty');
+        }
+        $uri = $this->gateway . 'cgi-bin/clear_quota?access_token=' . $this->accessToken;
+        return $this->returnResponseHandler($this->http($uri, 'POST', [
+            'json' => ['appid' => $this->appId]
+        ]));
     }
 
     /**
@@ -262,12 +312,12 @@ class ShrimpWechat
             return 'success';
         }
         $type = (string) $xmlMessage->MsgType;
-        $name = $type;
+        $eventName = $type;
         if ($type === Event::EVENT) {
-            $name = Event::EVENT . '.' . (string) $xmlMessage->Event;
+            $eventName= Event::EVENT . '.' . (string) $xmlMessage->Event;
         }
         $event = new ResponseEvent($xmlMessage);
-        self::$dispatcher->dispatch($name, $event);
+        self::$dispatcher->dispatch($event, $eventName);
         if ($event->hasResponse()) {
             return (string) $event->getResponse();
         }
@@ -303,8 +353,11 @@ class ShrimpWechat
      */
     public function getAccessToken()
     {
+        if ($this->accessToken) {
+            return $this->accessToken;
+        }
         if ($this->readAccessTokenCallable) {
-            return call_user_func($this->readAccessTokenCallable);
+            $this->accessToken = call_user_func($this->readAccessTokenCallable);
         }
         return $this->accessToken;
     }
@@ -320,6 +373,7 @@ class ShrimpWechat
 
     /**
      * @param $uri
+     * @return ShrimpWechat
      */
     public function setGateway($uri)
     {
@@ -332,6 +386,7 @@ class ShrimpWechat
      * @param $args
      * @return mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
     public function refreshAccessToken(string $method, array $args)
     {
@@ -345,6 +400,7 @@ class ShrimpWechat
      * @param array $response
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
     public function returnResponseHandler(array $response)
     {
@@ -373,75 +429,41 @@ class ShrimpWechat
     }
 
     /**
-     * @param $uri
-     * @param array $data
+     * @param string $uri
      * @param string $method
-     * @return mixed
-     * @throws \RuntimeException
+     * @param array $options
+     * @return array
+     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @throws Exception
      */
-
-    public function http($uri, array $data = [], $method = 'GET', $contentType = 'html', $header = [])
+    public function http(string $uri, string $method = 'GET', array $options = [])
     {
-        $curl = curl_init();
-        $options = [
-            CURLOPT_RETURNTRANSFER => true,         // return web page
-            CURLOPT_HEADER         => false,        // don't return headers
-            CURLOPT_USERAGENT      => $this->userAgent,     // who am i
-            CURLOPT_AUTOREFERER    => true,         // set referer on redirect
-            CURLOPT_CONNECTTIMEOUT => $this->timeout,          // timeout on connect
-            CURLOPT_TIMEOUT        => $this->timeout,          // timeout on response
-            CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
-            CURLOPT_SSL_VERIFYPEER => false,        //
-        ];
-        $requestData = null;
-        switch ($contentType) {
-            case 'html':
-                array_push($header, "Content-Type: text/html; charset=utf-8");
-                $requestData = $data ? http_build_query($data) : null;
-                break;
-            case 'json':
-                array_push($header, "Content-Type: application/json");
-                $requestData = $data ? json_encode($data, JSON_UNESCAPED_UNICODE) : null;
-                break;
-            case 'xml':
-                array_push($header, "Content-Type: application/xml");
-                if ($data) {
-                    $xml = new \SimpleXMLElement('<xml/>');
-                    array_walk_recursive($data, [$xml, 'addChild']);
-                    $requestData = $xml->asXML();
-                }
-                break;
-            case 'form':
-                array_push($header, "multipart/form-data");
-                $requestData = $data ? $data : null;
-                break;
+        if (empty($options['timeout'])) {
+            $options['timeout'] = $this->timeout;
         }
-        if ($header) {
-            $options[CURLOPT_HTTPHEADER] = $header;
+        if (empty($options['headers'])) {
+            $options['headers'] = [];
         }
-        if (strtoupper($method) === 'GET' && $requestData) {
-            $uri .= '?' . $requestData;
+        if (!empty($options['json'])) {
+            $options['body'] = json_encode($options['json'], JSON_UNESCAPED_UNICODE);
+            $options['headers']['content-type'] = 'application/json';
+            unset($options['json']);
         }
-        if (strtoupper($method) === 'POST') {
-            $options[CURLOPT_POST] = 1;            // i am sending post data
-            $options[CURLOPT_POSTFIELDS] = $requestData;    // this are my post vars]
+        $options['headers']['User-Agent'] = $this->userAgent;
+        $response = $this->client->request($method, $uri, $options);
+        if ($response->getStatusCode() !== 200) {
+            throw new Exception($response->getBody()->getContents());
         }
-        $options[CURLOPT_URL] = $uri;
-        curl_setopt_array($curl, $options);
-        $response = curl_exec($curl);
-        if (curl_errno($curl)) {
-            throw new \RuntimeException(curl_error($curl));
-        }
-        curl_close($curl);
-        return json_decode($response, true);
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     /**
      * @param $name
      * @return mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getModule($name)
+    private function getModule($name)
     {
         if (isset($this->modules[$name])) {
             return $this->modules[$name];
@@ -487,59 +509,26 @@ class ShrimpWechat
             case 'datacube':
                 $module = new Datacube();
                 break;
+            case 'service':
+                $module = new CustomService();
+                break;
+            case 'template':
+                $module = new Template();
+                break;
         }
         return $module;
     }
+
     /**
      * @param $name
      * @return mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
     public function __get($name)
     {
         // TODO: Implement __get() method.
         return $this->getModule($name);
-    }
-
-    /**
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     * @throws \ErrorException
-     * @throws Exception
-     */
-    public function __call($name, $arguments)
-    {
-        $module = $this->reflectionModules($name);
-        if ($module === null) {
-            throw new \ErrorException("调未用户定义的方法");
-        }
-        return call_user_func_array([$this->getModule($module), $name], $arguments);
-    }
-
-    /**
-     * @param $name
-     * @return null|string
-     * @throws \ReflectionException
-     */
-    private function reflectionModules($name)
-    {
-        $class = [
-            User::class,
-            Menu::class,
-            Material::class,
-            Card::class,
-            Datacube::class,
-            Menu::class,
-            Message::class,
-        ];
-        foreach ($class as $cls) {
-            $reflection = new ReflectionClass($cls);
-            if ($reflection->hasMethod($name)) {
-                return strtolower($reflection->getShortName());
-            }
-        }
-        return null;
     }
 
     /**

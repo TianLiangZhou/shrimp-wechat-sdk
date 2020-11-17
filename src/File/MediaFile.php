@@ -1,9 +1,4 @@
 <?php
-
-namespace Shrimp\File;
-
-use Shrimp\Support\Collection;
-
 /**
  * Created by PhpStorm.
  * User: meshell
@@ -11,14 +6,24 @@ use Shrimp\Support\Collection;
  * Time: 19:19
  */
 
+declare(strict_types=1);
 
+namespace Shrimp\File;
+
+use Exception;
+use Shrimp\Support\Collection;
+
+/**
+ * Class MediaFile
+ * @package Shrimp\File
+ */
 class MediaFile extends Collection
 {
 
     /**
      * MediaFile constructor.
      * @param string|array $file {$_FILE || example.png}
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($file)
     {
@@ -34,10 +39,13 @@ class MediaFile extends Collection
     /**
      * @param $file
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function formatFile($file)
     {
+        if (!file_exists($file)) {
+            throw new Exception("文件不存在!");
+        }
         $info = pathinfo($file);
         $type = "";
         if (MimeType::$mine[$info['extension']]) {
@@ -46,7 +54,7 @@ class MediaFile extends Collection
                 : MimeType::$mine[$info['extension']];
         }
         if (empty($type)) {
-            throw new \Exception("不能识别的文件");
+            throw new Exception("不能识别的文件");
         }
         return [
             'name' => $info['basename'],
@@ -74,4 +82,3 @@ class MediaFile extends Collection
         }
     }
 }
-

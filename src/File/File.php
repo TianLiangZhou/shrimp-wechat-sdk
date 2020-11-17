@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Shrimp\File;
-
 
 /**
  * Class File
@@ -13,7 +13,7 @@ class File
     /**
      * @var array|null
      */
-    private $file = null;
+    private $file;
 
     /**
      * File constructor.
@@ -71,6 +71,22 @@ class File
     public function getExtName()
     {
         return strtolower(pathinfo($this->file['name'], PATHINFO_EXTENSION));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTmpname()
+    {
+        return $this->file['tmp_name'];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->file['name'];
     }
 
     /**

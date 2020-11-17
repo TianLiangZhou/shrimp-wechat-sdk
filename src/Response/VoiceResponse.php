@@ -6,6 +6,8 @@
  * Time: 11:25
  */
 
+declare(strict_types=1);
+
 namespace Shrimp\Response;
 
 class VoiceResponse extends Response

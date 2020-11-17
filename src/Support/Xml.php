@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the overtrue/wechat.
  *
@@ -76,9 +78,11 @@ class Xml
     {
         $backup = libxml_disable_entity_loader(true);
         $backup_errors = libxml_use_internal_errors(true);
-        $xml = simplexml_load_string(self::sanitize($inputXml),
-                'SimpleXMLElement',
-                LIBXML_COMPACT | LIBXML_NOCDATA | LIBXML_NOBLANKS);
+        $xml = simplexml_load_string(
+            self::sanitize($inputXml),
+            'SimpleXMLElement',
+            LIBXML_COMPACT | LIBXML_NOCDATA | LIBXML_NOBLANKS
+        );
         libxml_disable_entity_loader($backup);
         libxml_clear_errors();
         libxml_use_internal_errors($backup_errors);

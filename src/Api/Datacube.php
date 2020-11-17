@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shrimp\Api;
 
 use Exception;
@@ -12,15 +14,16 @@ class Datacube extends Base
      *
      * @param string $begin 开始时间
      * @param string $end 结束时间
-     * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141082
      * @return array
-     * @throws
+     * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141082
      */
-    public function grow($begin, $end)
+    public function getUserSummary(string $begin, string $end)
     {
-        $uri = $this->format("getusersummary");
+        $uri = $this->format("datacube/getusersummary");
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -32,15 +35,16 @@ class Datacube extends Base
      *
      * @param string $begin 开始时间
      * @param string $end 结束时间
-     * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141082
      * @return array
-     * @throws
+     * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141082
      */
-    public function count($begin, $end)
+    public function getUserCumulate(string $begin, string $end)
     {
-        $uri = $this->format("getusercumulate");
+        $uri = $this->format("datacube/getusercumulate");
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -50,17 +54,18 @@ class Datacube extends Base
     /**
      * 获取图文群发每日数据
      *
-     * @param string $begin
-     * @param string $end
-     * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
+     * @param string $begin 开始时间
+     * @param string $end 结束时间
      * @return array|mixed
-     * @throws
+     * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
      */
-    public function getTodayArticleMass($begin, $end)
+    public function getArticleSummary(string $begin, string $end)
     {
-        $uri = $this->format('getarticlesummary');
+        $uri = $this->format('datacube/getarticlesummary');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -75,12 +80,13 @@ class Datacube extends Base
      * @param string $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getArticleMassCount($begin, $end)
+    public function getArticleTotal(string $begin, string $end)
     {
-        $uri = $this->format('getarticletotal');
+        $uri = $this->format('datacube/getarticletotal');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -88,19 +94,20 @@ class Datacube extends Base
     }
 
     /**
-     * 获取图文统计数据
+     * 获取图文阅读统计数据
      *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
      * @param string $begin
      * @param string $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getArticleCount($begin, $end)
+    public function getUserRead(string $begin, string $end)
     {
-        $uri = $this->format('getuserread');
+        $uri = $this->format('datacube/getuserread');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -108,19 +115,20 @@ class Datacube extends Base
     }
 
     /**
-     * 获取图文统计分时数据
+     * 获取图文阅读统计分时数据
      *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141084
      * @param string $begin
      * @param string $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getArticleHour($begin, $end)
+    public function getUserReadHour(string $begin, string $end)
     {
-        $uri = $this->format('getuserreadhour');
+        $uri = $this->format('datacube/getuserreadhour');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -135,12 +143,13 @@ class Datacube extends Base
      * @param string $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getArticleShare($begin, $end)
+    public function getUserShare(string $begin, string $end)
     {
-        $uri = $this->format('getusershare');
+        $uri = $this->format('datacube/getusershare');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -155,12 +164,13 @@ class Datacube extends Base
      * @param string $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getArticleShareHour($begin, $end)
+    public function getUserShareHour(string $begin, string $end)
     {
-        $uri = $this->format('getusersharehour');
+        $uri = $this->format('datacube/getusersharehour');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -176,11 +186,11 @@ class Datacube extends Base
      * @return array|mixed
      * @throws Exception
      */
-    public function getUpstreamMessage($begin, $end)
+    public function getUpstreamMessage(string $begin, string $end)
     {
-        $uri = $this->format('getupstreammsg');
+        $uri = $this->format('datacube/getupstreammsg');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -195,12 +205,13 @@ class Datacube extends Base
      * @param $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getUpstreamMessageHour($begin, $end)
+    public function getUpstreamMessageHour(string $begin, string $end)
     {
-        $uri = $this->format('getupstreammsghour');
+        $uri = $this->format('datacube/getupstreammsghour');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -215,12 +226,13 @@ class Datacube extends Base
      * @param $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getUpstreamMessageWeek($begin, $end)
+    public function getUpstreamMessageWeek(string $begin, string $end)
     {
-        $uri = $this->format('getupstreammsgweek');
+        $uri = $this->format('datacube/getupstreammsgweek');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -232,15 +244,16 @@ class Datacube extends Base
      *
      * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141085
      * @param string $begin
-     * @param $end
+     * @param string $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getUpstreamMessageMonth($begin, $end)
+    public function getUpstreamMessageMonth(string $begin, string $end)
     {
-        $uri = $this->format('getupstreammsgmonth');
+        $uri = $this->format('datacube/getupstreammsgmonth');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -255,12 +268,13 @@ class Datacube extends Base
      * @param $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getUpstreamDist($begin, $end)
+    public function getUpstreamMessageDist(string $begin, string $end)
     {
-        $uri = $this->format('getupstreammsgdist');
+        $uri = $this->format('datacube/getupstreammsgdist');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -275,12 +289,13 @@ class Datacube extends Base
      * @param $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getUpstreamDistWeek($begin, $end)
+    public function getUpstreamMessageDistWeek(string $begin, string $end)
     {
-        $uri = $this->format('getupstreammsgdistweek');
+        $uri = $this->format('datacube/getupstreammsgdistweek');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -295,12 +310,13 @@ class Datacube extends Base
      * @param $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getUpstreamDistMonth($begin, $end)
+    public function getUpstreamMessageDistMonth(string $begin, string $end)
     {
-        $uri = $this->format('getupstreammsgdistmonth');
+        $uri = $this->format('datacube/getupstreammsgdistmonth');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -315,12 +331,13 @@ class Datacube extends Base
      * @param $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getInterface($begin, $end)
+    public function getInterfaceSummary(string $begin, string $end)
     {
-        $uri = $this->format('getinterfacesummary');
+        $uri = $this->format('datacube/getinterfacesummary');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -335,12 +352,13 @@ class Datacube extends Base
      * @param string $end
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getInterfaceHour($begin, $end)
+    public function getInterfaceSummaryHour(string $begin, string $end)
     {
-        $uri = $this->format('getinterfacesummaryhour');
+        $uri = $this->format('datacube/getinterfacesummaryhour');
         try {
-            $response = $this->sdk->http($uri, ['begin_date' => $begin, 'end_date' => $end], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_date' => $begin, 'end_date' => $end]]);
         } catch (Exception $e) {
             throw $e;
         }

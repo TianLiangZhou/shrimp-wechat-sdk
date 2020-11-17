@@ -5,17 +5,21 @@
  * Date: 2017/5/15
  * Time: 15:35
  */
-include dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+
+use Shrimp\ShrimpWechat;
+
+include __DIR__ . '/../vendor/autoload.php';
 
 
-$sdk  = new \Shrimp\ShrimpWechat(
-    'wx983dd48be764e9ce',
-    '26b8ccf343bddeecd0402e1b864d2dd4'
+$sdk  = new ShrimpWechat(
+    'wxed1cc1b0e241ff74',
+    '434ca4dfc791853b9ef36ebf24a3ce02'
 );
-print_r($sdk->createMenu([
 
+$response = $sdk->menu->create([
           "type" => "click",
           "name" => "测试三",
           "key"  => "V1001_TODAY_VIEW"
+]);
 
-]));
+var_dump($response);

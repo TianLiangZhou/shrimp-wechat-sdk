@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Shrimp\Support;
-
 
 use InvalidArgumentException;
 
@@ -36,9 +36,12 @@ class Aes
      * @return string
      */
     public static function decrypt(
-        string $cipherText, string $key, string $iv = '', int $option = OPENSSL_RAW_DATA, $method = null
-    ): string
-    {
+        string $cipherText,
+        string $key,
+        string $iv = '',
+        int $option = OPENSSL_RAW_DATA,
+        $method = null
+    ): string {
         self::validateKey($key);
         $iv && self::validateIv($iv);
 
@@ -78,5 +81,4 @@ class Aes
             throw new InvalidArgumentException('IV length must be 16 bytes.');
         }
     }
-
 }

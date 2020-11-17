@@ -25,9 +25,9 @@ composer require meshell/shrimp-wechat-sdk
 
 use Shrimp\ShrimpWechat;
 
-$sdk  = new ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+$sdk  = new ShrimpWechat('wxed1cc1b0e241ff74', '434ca4dfc791853b9ef36ebf24a3ce02');
 try {
-    $array = $sdk->menu->createMenu(["type" => "click", "name" => "测试三", "key"  => "V1001_TODAY_VIEW"]);
+    $array = $sdk->menu->create(["type" => "click", "name" => "测试三", "key"  => "V1001_TODAY_VIEW"]);
 } catch(Exception $e) {
     throw $e;
 }
@@ -42,9 +42,9 @@ try {
 use Shrimp\ShrimpWechat;
 use Shrimp\File\MediaFile;
 
-$sdk  = new ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+$sdk  = new ShrimpWechat('wxed1cc1b0e241ff74', '434ca4dfc791853b9ef36ebf24a3ce02');
 try {
-    $file = $sdk->material->uploadPermanentMaterial(new MediaFile(dirname(__DIR__) . '/content-image.png'));
+    $file = $sdk->material->add(new MediaFile(dirname(__DIR__) . '/content-image.png'));
 } catch(Exception $e) {
     throw $e;
 }
@@ -77,7 +77,7 @@ class TestController implements EventSubscriberInterface
     public function __construct() 
     {
         
-        $this->shrimp  = new ShrimpWechat('wx983dd48be764e9ce', '26b8ccf343bddeecd0402e1b864d2dd4');
+        $this->shrimp = new ShrimpWechat('wxed1cc1b0e241ff74', '434ca4dfc791853b9ef36ebf24a3ce02');
         
         $this->shrimp->getDispatcher()->addSubscriber($this);
     }
@@ -117,9 +117,9 @@ class TestController implements EventSubscriberInterface
 
 ```php
 <?php
-
-...
-    function (\Shrimp\Event\ResponseEvent $responseEvent) {
+    ...
+    function (\Shrimp\Event\ResponseEvent $responseEvent)
+    {
         $mediaId = 123;
         $responseEvent->setResponse(
             new \Shrimp\Response\ImageResponse(

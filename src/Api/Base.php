@@ -6,6 +6,8 @@
  * Time: 17:19
  */
 
+declare(strict_types=1);
+
 namespace Shrimp\Api;
 
 use Shrimp\ShrimpWechat;
@@ -26,22 +28,13 @@ class Base
     }
 
     /**
-     * @param $name
-     * @param bool $isModule
+     * @param string $name
      * @return string
      */
-    protected function format($name, $isModule = true, $class = null)
+    protected function format(string $name)
     {
         $gateway = $this->sdk->getGateway();
         $accessToken = $this->sdk->getAccessToken();
-        if ($isModule) {
-            if (empty($class)) {
-                $class = strtolower(
-                    str_replace(__NAMESPACE__ . '\\', '', get_class($this))
-                );
-            }
-            $gateway .= $class . '/';
-        }
-        return $gateway . $name . '?access_token=' . $accessToken;
+        return sprintf('%s%s?access_token=%s', $gateway, $name, $accessToken);
     }
 }

@@ -6,6 +6,8 @@
  * Time: 9:12
  */
 
+declare(strict_types=1);
+
 namespace Shrimp\Response;
 
 /**
@@ -25,7 +27,7 @@ abstract class Response implements ResponseInterface
      * @param $source
      * @param $content
      */
-    public function __construct($source, $content)
+    public function __construct(\SimpleXMLElement $source, $content)
     {
         $this->source = $source;
 

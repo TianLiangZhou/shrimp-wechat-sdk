@@ -6,6 +6,8 @@
  * Time: 11:22
  */
 
+declare(strict_types=1);
+
 namespace Shrimp\Response;
 
 class ImageResponse extends Response

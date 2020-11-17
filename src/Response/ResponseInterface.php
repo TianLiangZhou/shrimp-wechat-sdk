@@ -6,6 +6,8 @@
  * Time: 8:41
  */
 
+declare(strict_types=1);
+
 namespace Shrimp\Response;
 
 interface ResponseInterface

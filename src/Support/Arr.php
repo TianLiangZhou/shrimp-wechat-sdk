@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Shrimp\Support;
-
 
 /**
  * Class Arr
@@ -14,7 +14,7 @@ class Arr
      * 根据key排序转换成http query
      *
      * @param array $array
-     * @param bool $encode
+     * @param callable|null $encode
      * @return string
      */
     public static function sortQuery(array $array, callable $encode = null): string
@@ -32,7 +32,7 @@ class Arr
 
     /**
      * @param array $headers
-     * @param string $split
+     * @param callable|null $encode
      * @return array
      */
     public static function header(array $headers, callable $encode = null): array

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Shrimp\Api;
 
 /**
@@ -8,8 +11,12 @@ namespace Shrimp\Api;
  * Time: 16:56
  */
 use Exception;
-use Shrimp\ShrimpWechat;
 
+/**
+ * Class User
+ * @package Shrimp\Api
+ * @see https://developers.weixin.qq.com/doc/offiaccount/User_Management/User_Tag_Management.html
+ */
 class User extends Base
 {
     /**
@@ -18,13 +25,14 @@ class User extends Base
      * @param string $name
      * @return array
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function createLabel($name)
+    public function createTag(string $name)
     {
-        $uri = $this->format('create', true, 'tags');
+        $uri = $this->format('cgi-bin/tags/create');
         $data['tag']['name'] = $name;
         try {
-            $response = $this->sdk->http($uri, $data, 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => $data]);
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -36,10 +44,11 @@ class User extends Base
      *
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getLabel()
+    public function getTags()
     {
-        $uri = $this->format('get', true, 'tags');
+        $uri = $this->format('cgi-bin/tags/get');
         try {
             $response = $this->sdk->http($uri);
         } catch (\Exception $exception) {
@@ -55,17 +64,17 @@ class User extends Base
      * @param $name
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function updateLabel($id, $name)
+    public function updateTag(int $id, string $name)
     {
-        $uri = $this->format('update', true, 'tags');
+        $uri = $this->format('cgi-bin/tags/update');
 
         try {
             $response = $this->sdk->http(
                 $uri,
-                ['tag' => ['id' => $id, 'name' => $name]],
                 'POST',
-                'json'
+                ['json' => ['tag' => ['id' => $id, 'name' => $name]]],
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -79,16 +88,16 @@ class User extends Base
      * @param $id
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function deleteLabel($id)
+    public function deleteTag(int $id)
     {
-        $uri = $this->format('delete', true, 'tags');
+        $uri = $this->format('cgi-bin/tags/delete');
         try {
             $response = $this->sdk->http(
                 $uri,
-                ['tag' => ['id' => $id]],
                 'POST',
-                'json'
+                ['json' => ['tag' => ['id' => $id]]]
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -100,19 +109,19 @@ class User extends Base
      * 获取标签下的粉丝列表
      *
      * @param $id
-     * @param null $openId
+     * @param string|null $openId
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getFollow($id, $openId = null)
+    public function getTagUser(int $id, string $openId = null)
     {
-        $uri = $this->format('tag/get');
+        $uri = $this->format('cgi-bin/user/tag/get');
         try {
             $response = $this->sdk->http(
                 $uri,
-                ['tagid' => $id, 'next_openid' => $openId],
                 'POST',
-                'json'
+                ['json' => ['tagid' => $id, 'next_openid' => $openId]]
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -127,16 +136,16 @@ class User extends Base
      * @param $id
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function applyLabel(array $openId, $id)
+    public function batchTagging(array $openId, int $id)
     {
-        $uri = $this->format('members/batchtagging', true, 'tags');
+        $uri = $this->format('cgi-bin/tags/members/batchtagging');
         try {
             $response = $this->sdk->http(
                 $uri,
-                ['openid_list' => $openId, 'tagid' => $id],
                 'POST',
-                'json'
+                ['json' => ['openid_list' => $openId, 'tagid' => $id]]
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -151,16 +160,16 @@ class User extends Base
      * @param $id
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function cancelLabel(array $openId, $id)
+    public function batchUnTagging(array $openId, $id)
     {
-        $uri = $this->format('members/batchuntagging', true, 'tags');
+        $uri = $this->format('cgi-bin/tags/members/batchuntagging');
         try {
             $response = $this->sdk->http(
                 $uri,
-                ['openid_list' => $openId, 'tagid' => $id],
                 'POST',
-                'json'
+                ['json' => ['openid_list' => $openId, 'tagid' => $id]],
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -174,16 +183,16 @@ class User extends Base
      * @param $openId
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function getUserLabel($openId)
+    public function getUserTags(string $openId)
     {
-        $uri = $this->format('getidlist', true, 'tags');
+        $uri = $this->format('cgi-bin/tags/getidlist');
         try {
             $response = $this->sdk->http(
                 $uri,
-                ['openid' => $openId],
                 'POST',
-                'json'
+                ['json' => ['openid' => $openId]]
             );
         } catch (\Exception $exception) {
             throw $exception;
@@ -194,13 +203,14 @@ class User extends Base
     /**
      * 获取用户列表
      *
-     * @param null $nextOpenId
+     * @param string|null $nextOpenId
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function get($nextOpenId = null)
+    public function get(string $nextOpenId = null)
     {
-        $uri = $this->format('get') . '&next_openid=' . $nextOpenId;
+        $uri = $this->format('cgi-bin/user/get') . '&next_openid=' . $nextOpenId;
         try {
             $response = $this->sdk->http($uri);
         } catch (\Exception $exception) {
@@ -216,10 +226,11 @@ class User extends Base
      * @param string $lang
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function info($openId, $lang = 'zh_CN')
+    public function info(string $openId, string $lang = 'zh_CN')
     {
-        $uri = $this->format('info') . '&openid=' . $openId . '&lang=' . $lang;
+        $uri = $this->format('cgi-bin/user/info') . '&openid=' . $openId . '&lang=' . $lang;
         try {
             $response = $this->sdk->http($uri);
         } catch (\Exception $exception) {
@@ -235,17 +246,18 @@ class User extends Base
      * @param string $lang
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function batchInfo(array $openId, $lang = 'zh_CN')
+    public function batchInfo(array $openId, string $lang = 'zh_CN')
     {
-        $uri = $this->format('info/batchget');
+        $uri = $this->format('cgi-bin/user/info/batchget');
         try {
             $list = array_map(function ($id) use ($lang) {
                 return [
                     'openid' => $id, 'lang' => $lang
                 ];
             }, $openId);
-            $response = $this->sdk->http($uri, ['user_list' => $list], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['user_list' => $list]]);
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -259,12 +271,13 @@ class User extends Base
      * @param $mark
      * @return array|mixed
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
     public function mark($openId, $mark)
     {
-        $uri = $this->format('info/updateremark');
+        $uri = $this->format('cgi-bin/user/info/updateremark');
         try {
-            $response = $this->sdk->http($uri, ['openid' => $openId, 'remark' => $mark], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['openid' => $openId, 'remark' => $mark]]);
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -277,12 +290,13 @@ class User extends Base
      * @param string $nextOpenId 上个openid
      * @return array
      * @throws Exception
+     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    public function backList($nextOpenId = '')
+    public function blackList(string $nextOpenId = '')
     {
-        $uri = $this->format("members/getblacklist", true, "tags");
+        $uri = $this->format("cgi-bin/tags/members/getblacklist");
         try {
-            $response = $this->sdk->http($uri, ['begin_openid' => $nextOpenId], 'POST', 'json');
+            $response = $this->sdk->http($uri, 'POST', ['json' => ['begin_openid' => $nextOpenId]]);
         } catch (Exception $e) {
             throw $e;
         }

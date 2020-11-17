@@ -6,6 +6,8 @@
  * Time: 11:28
  */
 
+declare(strict_types=1);
+
 namespace Shrimp\Response;
 
 class VideoResponse extends Response

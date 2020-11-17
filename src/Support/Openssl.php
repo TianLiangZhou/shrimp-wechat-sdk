@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Shrimp\Support;
-
 
 use Exception;
 
@@ -100,5 +100,4 @@ class Openssl
         }
         return $resource;
     }
-
 }
