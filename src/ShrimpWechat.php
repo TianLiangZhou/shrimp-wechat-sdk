@@ -187,7 +187,7 @@ class ShrimpWechat
         }
         $params = [$token, $query['timestamp'], $query['nonce']];
         sort($params, SORT_STRING);
-        $sign = sha1(implode($params, ''));
+        $sign = sha1(implode($params));
         if ($sign == $query['signature']) {
             return true;
         }
