@@ -76,14 +76,19 @@ class Xml
      */
     public static function simple(string $inputXml): ?SimpleXMLElement
     {
-        $backup = libxml_disable_entity_loader(true);
+        if (\PHP_VERSION_ID < 80000) {
+            $backup = libxml_disable_entity_loader(true);
+        }
         $backup_errors = libxml_use_internal_errors(true);
         $xml = simplexml_load_string(
             self::sanitize($inputXml),
             'SimpleXMLElement',
             LIBXML_COMPACT | LIBXML_NOCDATA | LIBXML_NOBLANKS
         );
-        libxml_disable_entity_loader($backup);
+
+        if (\PHP_VERSION_ID < 80000 && isset($backup)) {
+            libxml_disable_entity_loader($backup);
+        }
         libxml_clear_errors();
         libxml_use_internal_errors($backup_errors);
         if ($xml === false) {
