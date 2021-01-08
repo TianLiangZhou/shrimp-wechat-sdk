@@ -113,9 +113,7 @@ class ShrimpWechat
     {
         $this->appId = $appId;
         $this->secret = $secret;
-        if (empty($options['cacheDir'])) {
-            $this->defaultCacheDir = __DIR__ . '/../';
-        }
+        $this->defaultCacheDir = $options["cacheDir"] ?? (__DIR__ . '/../');
         self::$dispatcher = new EventDispatcher();
         if (empty($options['client'])) {
             $options['client'] = new Client($options['config'] ?? []);
